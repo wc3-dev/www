@@ -14,11 +14,6 @@
 }
 @layer layout {
   .wrap { width: min(1180px, calc(100% - 5rem)); margin-inline: auto; }
-  .site-header { min-height: 100px; display: flex; align-items: center; gap: 3rem; border-bottom: 1px solid var(--line); }
-  .site-header nav { display: flex; align-items: center; gap: 2.2rem; margin-left: auto; }
-  .site-header nav a { font-size: .94rem; color: var(--muted); display: flex; align-items: center; gap: .35rem; }
-  .site-header nav a:hover,.site-header nav a[aria-current] { color: var(--ink); }
-  .source-link { display: inline-flex; }
   .hero { padding-block: 66px 0; }
   .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 5rem; align-items: center; margin-top: 26px; }
   .hero h1 { font-size: clamp(2.7rem, 5.3vw, 4.65rem); line-height: 1.08; letter-spacing: -.058em; font-weight: 650; }
@@ -99,10 +94,6 @@
 }
 @media (max-width: 620px) {
   .wrap { width: calc(100% - 2.5rem); }
-  .site-header { min-height: 84px; gap: 1rem; flex-wrap: wrap; padding-block: 18px; }
-  .site-header nav { gap: 1rem; }
-  .site-header nav a { font-size: .85rem; }
-  .source-link { display: none; }
   .brand { font-size: 1.3rem; gap: .35rem; }
   .brand svg { width: 22px; }
   .hero { padding-top: 38px; }
@@ -127,11 +118,8 @@
 
 /* The supplied crest sets the visual language: gold, steel, and angular edges. */
 body { background: radial-gradient(ellipse at 85% 8%, #29352b70, transparent 38%), var(--bg); }
-.site-header { border-bottom-color: #8c742c70; }
 .brand { letter-spacing: -.045em; }
 .brand img { object-fit: contain; flex-shrink: 0; }
-.site-header .brand img { width: 56px; height: 56px; }
-.site-header nav a[aria-current] { color: var(--accent); }
 .hero h1 { font-weight: 750; letter-spacing: -.05em; }
 .hero h1 span { background: linear-gradient(110deg, #ffff82, #f2c900 85%); background-clip: text; color: transparent; }
 .hero-emblem { display: flex; flex-direction: column; align-items: center; position: relative; }
@@ -160,9 +148,6 @@ body { background: radial-gradient(ellipse at 85% 8%, #29352b70, transparent 38%
   .field-notes > a > svg { display: none; }
 }
 @media (max-width: 620px) {
-  .site-header .brand img { width: 42px; height: 42px; }
-  .site-header { gap: 12px; }
-  .site-header nav { gap: .9rem; }
   .hero-emblem img { width: min(75%, 270px); }
   .hero .hero-grid { gap: 24px; }
   .field-notes { grid-template-columns: 1fr; margin-top: 30px; }
@@ -171,21 +156,5 @@ body { background: radial-gradient(ellipse at 85% 8%, #29352b70, transparent 38%
   .field-notes > a > svg { display: block; }
 }
 
-/* Compact shared application navigation. */
+/* Shell pages reset to a flat background; the marketing gradient above is only for the home hero. */
 body { background: var(--bg); }
-.portal-app { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 100dvh; }
-.navigation-shell { position: relative; z-index: 50; background: #101a20; border-bottom: 1px solid #685a2a; }
-.site-header { min-height: 70px; border: 0; gap: 28px; }
-.site-header .brand img { width: 42px; height: 42px; }
-.site-header .brand { font-size: 1.35rem; }
-.site-header nav { gap: 28px; }
-.site-header nav a { min-height: 42px; }
-@media (max-width: 620px) {
-  .site-header { padding-block: 8px; gap: 4px 16px; }
-  .site-header nav { gap: 16px; }
-  .site-header .brand img { width: 36px; height: 36px; }
-}
-
-@media print {
-  .portal-app { display: block; height: auto; }
-}
