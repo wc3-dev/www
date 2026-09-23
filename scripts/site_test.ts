@@ -146,3 +146,37 @@ Deno.test('type pages list only their type', async () => {
     assert(html.includes(`/resources/${segment}/${slug}/`), `/resources/${segment}/ should link ${slug}`);
   }
 });
+
+Deno.test('resource previews keep a static fallback and model pages carry their game textures', async () => {
+  for (const route of ['models/fixture-footman', 'icons/fixture-sword-icon', 'textures/fixture-grass-tile', 'audio/fixture-horn', 'scripts/fixture-damage-lib']) {
+    const html = await Deno.readTextFile(new URL(`resources/${route}/index.html`, root));
+    assert.match(html, /class="preview-fallback"/, `Missing static fallback on ${route}`);
+    assert.match(html, /<p class="preview-message" role="status" hidden/, `Missing message slot on ${route}`);
+    assert.equal(/data-game-textures=/.test(html), route.startsWith('models/'), `data-game-textures only on model pages (${route})`);
+  }
+});
+
+// Heavy previewer code, each found by a string only its chunk contains. Shiki's error message names
+// createJavaScriptRegexEngine; theme names such as github-dark also appear in pages' highlighted code.
+const LAZY_CHUNKS = [
+  { name: 'the WebGL model viewer', marker: 'WEBGL_lose_context' },
+  { name: 'the Shiki script highlighter', marker: 'createJavaScriptRegexEngine' },
+];
+
+for (const { name, marker } of LAZY_CHUNKS) {
+  Deno.test(`${name} is a separate chunk that no page loads up front`, async () => {
+    const assets = new URL('_astro/', root);
+    const chunks: string[] = [];
+    for await (const entry of Deno.readDir(assets)) {
+      if (entry.name.endsWith('.js') && (await Deno.readTextFile(new URL(entry.name, assets))).includes(marker)) chunks.push(entry.name);
+    }
+    assert(chunks.length > 0, `The chunk for ${name} must be built`);
+    for (const file of await htmlFiles(root)) {
+      const html = await Deno.readTextFile(file);
+      assert(!html.includes(marker), `Code for ${name} inlined into ${file.pathname}`);
+      for (const [, src] of html.matchAll(/(?:src|href)="\/_astro\/([^"]+\.js)"/g)) {
+        assert(!chunks.includes(src), `${file.pathname} loads ${name} eagerly`);
+      }
+    }
+  });
+}

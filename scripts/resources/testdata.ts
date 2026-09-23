@@ -1,14 +1,22 @@
 // Tiny, valid Warcraft III files built in memory so tests need no binary fixtures.
+import BoneModule from 'mdx-m3-viewer-th/dist/cjs/parsers/mdlx/bone.js';
+import GeosetModule from 'mdx-m3-viewer-th/dist/cjs/parsers/mdlx/geoset.js';
+import LayerModule from 'mdx-m3-viewer-th/dist/cjs/parsers/mdlx/layer.js';
+import MaterialModule from 'mdx-m3-viewer-th/dist/cjs/parsers/mdlx/material.js';
 import ModelModule from 'mdx-m3-viewer-th/dist/cjs/parsers/mdlx/model.js';
 import SequenceModule from 'mdx-m3-viewer-th/dist/cjs/parsers/mdlx/sequence.js';
 import TextureModule from 'mdx-m3-viewer-th/dist/cjs/parsers/mdlx/texture.js';
 
 // This library publishes CommonJS modules with exports.default; Deno's default import is that exports object.
+const Bone = BoneModule.default;
+const Geoset = GeosetModule.default;
+const Layer = LayerModule.default;
+const Material = MaterialModule.default;
 const Model = ModelModule.default;
 const Sequence = SequenceModule.default;
 const Texture = TextureModule.default;
 
-function model(animations: string[], textures: string[]) {
+function model(animations: string[], textures: string[], replaceableIds: number[] = []) {
   const result = new Model();
   result.version = 800;
   animations.forEach((name, index) => {
@@ -23,11 +31,16 @@ function model(animations: string[], textures: string[]) {
     texture.path = path;
     result.textures.push(texture);
   }
+  for (const replaceableId of replaceableIds) {
+    const texture = new Texture();
+    texture.replaceableId = replaceableId;
+    result.textures.push(texture);
+  }
   return result;
 }
 
-export const makeMdx = (animations = ['Stand', 'Walk'], textures = ['Textures\\Footman.blp']): Uint8Array =>
-  model(animations, textures).saveMdx();
+export const makeMdx = (animations = ['Stand', 'Walk'], textures = ['Textures\\Footman.blp'], replaceableIds: number[] = []): Uint8Array =>
+  model(animations, textures, replaceableIds).saveMdx();
 
 export const makeMdl = (animations = ['Stand'], textures = ['Textures\\Footman.blp']): string =>
   model(animations, textures).saveMdl();
@@ -83,4 +96,47 @@ export function makeWav(seconds: number, sampleRate = 8000): Uint8Array {
   ascii(36, 'data');
   view.setUint32(40, dataSize, true);
   return bytes;
+}
+
+/**
+ * A single upright 100×100 quad textured with the model's first texture, framed by its extent.
+ * The quad faces +X, the viewer's default camera direction, so it shows at the initial view
+ * (verified in Task 9's browser checks); used for the fixture store and manual checks.
+ */
+export function makeTexturedMdx(options: { sequences?: string[]; textures?: string[]; replaceableIds?: number[] } = {}): Uint8Array {
+  const result = model(options.sequences ?? ['Stand'], options.textures ?? ['Textures\\Footman.blp'], options.replaceableIds ?? []);
+  const material = new Material();
+  const layer = new Layer();
+  layer.textureId = 0;
+  material.layers.push(layer);
+  result.materials.push(material);
+
+  const geoset = new Geoset();
+  // The quad faces +X, the front of a Warcraft III model and the viewer's default camera direction.
+  geoset.vertices = new Float32Array([0, -50, 0, 0, 50, 0, 0, 50, 100, 0, -50, 100]);
+  geoset.normals = new Float32Array([1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]);
+  geoset.faceTypeGroups = new Uint32Array([4]);
+  geoset.faceGroups = new Uint32Array([6]);
+  geoset.faces = new Uint16Array([0, 1, 2, 0, 2, 3]);
+  geoset.vertexGroups = new Uint8Array([0, 0, 0, 0]);
+  geoset.matrixGroups = new Uint32Array([1]);
+  geoset.matrixIndices = new Uint32Array([0]);
+  geoset.uvSets = [new Float32Array([0, 1, 1, 1, 1, 0, 0, 0])];
+  geoset.materialId = 0;
+  geoset.extent.min.set([0, -50, 0]);
+  geoset.extent.max.set([0, 50, 100]);
+  geoset.extent.boundsRadius = 80;
+  result.geosets.push(geoset);
+
+  const bone = new Bone();
+  bone.name = 'Root';
+  bone.objectId = 0;
+  bone.parentId = -1;
+  bone.geosetId = 0;
+  result.bones.push(bone);
+  result.pivotPoints.push(new Float32Array([0, 0, 0]));
+  result.extent.min.set([0, -50, 0]);
+  result.extent.max.set([0, 50, 100]);
+  result.extent.boundsRadius = 80;
+  return result.saveMdx();
 }
