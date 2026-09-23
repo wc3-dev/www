@@ -3,6 +3,10 @@ import { createHighlighter, type HighlighterGeneric } from 'shiki';
 import { jass } from '../src/syntax/jass.ts';
 
 const root = new URL('../dist/', import.meta.url);
+const ASSETS = 'https://assets.example.test/';
+// Scoped to inside an <a ...> tag: an unscoped \sdownload(?=[\s=>]) also matches the plain
+// English word, which shows up legitimately in documentation prose (e.g. "package download fails").
+const DOWNLOAD_ATTRIBUTE = /<a\b[^>]*\sdownload(?=[\s=>/])/;
 async function htmlFiles(directory: URL): Promise<URL[]> {
   const files: URL[] = [];
   for await (const entry of Deno.readDir(directory)) {
@@ -12,6 +16,14 @@ async function htmlFiles(directory: URL): Promise<URL[]> {
   }
   return files;
 }
+
+Deno.test('the download-attribute check matches download in any attribute position and not the plain word', () => {
+  assert.match('<a download href="x">', DOWNLOAD_ATTRIBUTE);
+  assert.match('<a href="x" download>', DOWNLOAD_ATTRIBUTE);
+  assert.match('<a href="x" download="f.mdx">', DOWNLOAD_ATTRIBUTE);
+  assert(!DOWNLOAD_ATTRIBUTE.test('<abbr download>'), 'Must not match non-<a> tags');
+  assert(!DOWNLOAD_ATTRIBUTE.test('<p>the package download fails</p>'), 'Must not match prose');
+});
 
 Deno.test('portal, framework, and migrated documentation routes are built', async () => {
   for (const route of ['', 'resources/', 'learn/', 'framework/', 'framework/docs/', ...[
@@ -23,14 +35,17 @@ Deno.test('portal, framework, and migrated documentation routes are built', asyn
   const homepage = await Deno.readTextFile(new URL('index.html', root));
   assert.match(homepage, /Hive Workshop/);
   assert.match(homepage, /w3ts framework/);
+  for (const title of ['Lua Reference', 'w3ts', 'WCSharp', 'Jassbot']) assert(homepage.includes(title), `Missing link ${title}`);
   const search = await Deno.stat(new URL('pagefind/pagefind.js', root));
   assert(search.isFile, 'Search bundle must exist');
 });
 
-Deno.test('built pages have no broken local links, anchors, or asset references', async () => {
+Deno.test('built pages have no broken local links, anchors, or asset references, and never link or download store files', async () => {
   for (const file of await htmlFiles(root)) {
     const html = await Deno.readTextFile(file);
     const pathname = file.href.slice(root.href.length).replace(/index\.html$/, '');
+    assert(!html.includes(`href="${ASSETS}`), `Store files must never be linked (${pathname})`);
+    assert(!DOWNLOAD_ATTRIBUTE.test(html), `No download attributes (${pathname})`);
     for (const [, reference] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
       const url = new URL(reference.replaceAll('&amp;', '&'), `https://wc3.dev/${pathname}`);
       if (url.origin !== 'https://wc3.dev') continue;
@@ -86,4 +101,48 @@ Deno.test('the search index covers every page marked for indexing', async () => 
   const indexed = Object.values(entry.languages as Record<string, { page_count: number }>)
     .reduce((total, language) => total + language.page_count, 0);
   assert.equal(indexed, marked);
+});
+
+Deno.test('resource detail pages credit and link the source without offering downloads', async () => {
+  const html = await Deno.readTextFile(new URL('resources/models/fixture-footman/index.html', root));
+  assert.match(html, /href="https:\/\/www\.hiveworkshop\.com\/threads\/fixture-footman\.1\/"[^>]*>\s*View on Hive Workshop/);
+  assert.match(html, /id="resource-preview"/);
+  assert.match(html, /name="wc3-tab"/);
+  assert(html.includes(`src="${ASSETS}resources/model/fixture-footman/2123456789ab/preview.png"`), 'Preview image must load from the asset store');
+  // Store URLs are allowed only inside data-files (for the previewers); nothing visible may name a file.
+  const visible = html.replace(/data-files="[^"]*"/, '');
+  assert(!visible.includes('Footman.mdx'), 'File names must not be shown');
+  for (const text of ['Fixture Author', 'Stand', 'Walk', 'Attack', 'Fixture Sword Icon']) assert(html.includes(text), `Missing ${text}`);
+});
+
+Deno.test('every hosted fixture has a detail page, with an icon when it has no preview', async () => {
+  for (const route of ['icons/fixture-sword-icon', 'textures/fixture-grass-tile', 'audio/fixture-horn', 'scripts/fixture-damage-lib']) {
+    const html = await Deno.readTextFile(new URL(`resources/${route}/index.html`, root));
+    assert.match(html, /id="resource-preview"/, `Missing preview area on ${route}`);
+  }
+  const texture = await Deno.readTextFile(new URL('resources/textures/fixture-grass-tile/index.html', root));
+  const preview = texture.match(/<section[^>]*id="resource-preview"[\s\S]*?<\/section>/)?.[0] ?? '';
+  assert(!preview.includes('<img'), 'A resource without a preview shows its type icon');
+  assert.match(texture, /Original source/);
+  assert.match(texture, /Derived from Blizzard Entertainment assets/);
+  const audio = await Deno.readTextFile(new URL('resources/audio/fixture-horn/index.html', root));
+  assert.match(audio, /0:03/);
+});
+
+Deno.test('the resource browser lists hosted fixtures, filters, and curated links', async () => {
+  const html = await Deno.readTextFile(new URL('resources/index.html', root));
+  assert.equal(html.match(/<a class="catalog-card"/g)?.length, 5);
+  assert.match(html, /data-filter-form/);
+  assert.match(html, /Hive Workshop/);
+  assert.match(html, /Jassbot/);
+  assert(html.indexOf('data-resource-card') < html.indexOf('Jassbot'), 'Curated links come after the catalog');
+});
+
+Deno.test('type pages list only their type', async () => {
+  const expected = { models: 'fixture-footman', icons: 'fixture-sword-icon', textures: 'fixture-grass-tile', audio: 'fixture-horn', scripts: 'fixture-damage-lib' };
+  for (const [segment, slug] of Object.entries(expected)) {
+    const html = await Deno.readTextFile(new URL(`resources/${segment}/index.html`, root));
+    assert.equal(html.match(/<a class="catalog-card"/g)?.length, 1, `/resources/${segment}/ should list one card`);
+    assert(html.includes(`/resources/${segment}/${slug}/`), `/resources/${segment}/ should link ${slug}`);
+  }
 });
