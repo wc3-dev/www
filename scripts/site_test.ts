@@ -1,6 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { createHighlighter, type HighlighterGeneric } from 'shiki';
 import { jass } from '../src/syntax/jass.ts';
+import { HIVE_CONTACT_URL } from '../src/lib/hive.ts';
 
 const root = new URL('../dist/', import.meta.url);
 const ASSETS = 'https://assets.example.test/';
@@ -34,7 +35,7 @@ Deno.test('portal, framework, and migrated documentation routes are built', asyn
   }
   const homepage = await Deno.readTextFile(new URL('index.html', root));
   assert.match(homepage, /Hive Workshop/);
-  assert.match(homepage, /w3ts framework/);
+  assert.match(homepage, /wc3\.dev-framework/);
   for (const title of ['Lua Reference', 'w3ts', 'WCSharp', 'Jassbot']) assert(homepage.includes(title), `Missing link ${title}`);
   const search = await Deno.stat(new URL('pagefind/pagefind.js', root));
   assert(search.isFile, 'Search bundle must exist');
@@ -180,3 +181,110 @@ for (const { name, marker } of LAZY_CHUNKS) {
     }
   });
 }
+
+/** Lesson ids (`<chapter>/<slug>`) from the content folder. */
+async function lessonIds(): Promise<string[]> {
+  const base = new URL('../src/content/tutorials/', import.meta.url);
+  const ids: string[] = [];
+  for await (const chapter of Deno.readDir(base)) {
+    if (!chapter.isDirectory) continue;
+    for await (const file of Deno.readDir(new URL(`${chapter.name}/`, base))) {
+      if (file.isFile && file.name.endsWith('.md')) ids.push(`${chapter.name}/${file.name.slice(0, -3)}`);
+    }
+  }
+  return ids.sort();
+}
+
+const readRoute = (path: string) => Deno.readTextFile(new URL(`${path.replace(/^\//, '')}index.html`, root));
+const between = (html: string, start: string, end: string) => html.slice(html.indexOf(start), html.indexOf(end, html.indexOf(start)));
+
+/** Fails when a directive reached the page as text: an unknown one (`:key[F9]`), or a stray `:::` fence. */
+function assertNoRawDirectives(html: string, path: string): void {
+  const text = between(html, '<main', '</main>')
+    .replace(/<script\b[\s\S]*?<\/script>/g, '')
+    .replace(/<style\b[\s\S]*?<\/style>/g, '')
+    .replace(/<[^>]*>/g, ' ');
+  // Prose such as "Hint:yes" has no space or bracket before the colon, so it is not a directive.
+  const raw = text.match(/(^|[\s(])::?[a-z][\w-]*[\[{]|:::/m);
+  assert(!raw, `Raw directive text "${raw?.[0].trim()}" on ${path}`);
+}
+
+Deno.test('the tutorial track chains every lesson from the overview to the closing page', async () => {
+  const landing = await readRoute('/learn/');
+  assert(!landing.includes('name="wc3-tab"'), 'The track overview is a section page, not a tab');
+  let path = landing.match(/<a class="button primary track-start" href="([^"]+)"/)?.[1];
+  assert(path, 'Missing "Start the track" link');
+  const visited: string[] = [];
+  let previous = '/learn/';
+  while (path !== '/learn/next/') {
+    assert(!visited.includes(path), `The lesson chain loops at ${path}`);
+    visited.push(path);
+    const html = await readRoute(path);
+    assert.match(html, /<meta name="wc3-tab"/, `Lessons open as tabs (${path})`);
+    assert.equal(html.match(/<a class="pager-prev" rel="prev" href="([^"]+)"/)?.[1], previous, `Previous link of ${path}`);
+    const outline = between(html, '<nav class="track-outline"', '</nav>');
+    const current = [...outline.matchAll(/<a href="([^"]+)" aria-current="page"/g)].map((match) => match[1]);
+    assert.deepEqual(current, [path], `The outline marks exactly the current lesson (${path})`);
+    const main = between(html, '<main', '</main>');
+    assertNoRawDirectives(html, path);
+    for (const [, attributes] of main.matchAll(/<h2([^>]*)>/g)) assert.match(attributes, /\bid="/, `A heading without an id on ${path}`);
+    previous = path;
+    path = html.match(/<a class="pager-next" rel="next" href="([^"]+)"/)?.[1];
+    assert(path, `Missing next link on ${previous}`);
+  }
+  assert.deepEqual(visited.map((route) => route.slice('/learn/'.length, -1)).sort(), await lessonIds());
+  const closing = await readRoute('/learn/next/');
+  assert.match(closing, /<meta name="wc3-tab"/);
+  assertNoRawDirectives(closing, '/learn/next/');
+  assert.equal(closing.match(/<a class="pager-prev" rel="prev" href="([^"]+)"/)?.[1], previous);
+  assert(!closing.includes('class="pager-next"'), 'The closing page ends the track');
+});
+
+Deno.test('tutorial markup stays out of the framework docs', async () => {
+  for (const file of await htmlFiles(new URL('framework/docs/', root))) {
+    const html = await Deno.readTextFile(file);
+    assert(!/class="(keys|menu-path|tutorial-[a-z-]+|shot[a-z -]*)"/.test(html), `Tutorial markup in ${file.pathname}`);
+  }
+});
+
+/** The markup of the first element with `class="<name>"`, up to its closing `</section>`. */
+const hiveSection = (html: string, name: string) => html.match(new RegExp(`<section class="${name}"[\\s\\S]*?</section>`))?.[0] ?? '';
+
+Deno.test('the resources page lists the Hive fixture as outbound links with a stale date and the opt-out note', async () => {
+  const html = await readRoute('/resources/');
+  const section = hiveSection(html, 'hive-activity');
+  assert.match(section, /id="new-on-hive"/);
+  assert(html.indexOf('id="community-and-tools"') < html.indexOf('id="new-on-hive"'), 'New on Hive comes after Community & tools');
+  const links = [...section.matchAll(/<a class="hive-title" href="([^"]+)" rel="external"/g)].map((match) => match[1]);
+  assert.equal(links.length, 7);
+  for (const link of links) assert(link.startsWith('https://www.hiveworkshop.com/'), `Not a Hive link: ${link}`);
+  assert(section.includes('Orcs &amp; Humans Icon Pack'), 'The & in a title is escaped once');
+  assert(!section.includes('&amp;amp;'), 'No double escaping');
+  assert.match(section, /by Fixture Modeler, Second Author/);
+  assert.match(section, /<h2 id="new-on-hive-title"><a href="https:\/\/www\.hiveworkshop\.com\/">New on Hive<svg[^>]*aria-hidden="true"/);
+  assert.match(section, /<span class="hive-updated">From Hive Workshop, last updated 10 January 2026\.<\/span>/);
+  assert.match(section, /<time datetime="2026-01-09" title="9 January 2026">/);
+  assert.match(section, /<p class="hive-optout"><strong>Authors on Hive:<\/strong>/);
+  assert(section.includes(`<a href="${HIVE_CONTACT_URL}">open an issue</a>`), 'The opt-out note links to HIVE_CONTACT_URL');
+});
+
+Deno.test('the home page shows the five newest Hive entries and links to the full list', async () => {
+  const card = hiveSection(await readRoute('/'), 'hive-card');
+  assert.match(card, /<h2 id="hive-card-title">Latest on Hive<\/h2>/);
+  const links = [...card.matchAll(/<a href="([^"]+)" rel="external"/g)].map((match) => match[1]);
+  assert.equal(links.length, 5);
+  for (const link of links) assert(link.startsWith('https://www.hiveworkshop.com/'), `Not a Hive link: ${link}`);
+  assert.match(card, /href="\/resources\/#new-on-hive"/);
+});
+
+Deno.test('the home Hive card says when the list was last updated, under its heading', async () => {
+  const card = hiveSection(await readRoute('/'), 'hive-card');
+  assert.match(card, /<\/header>\s*<p class="hive-card-updated">From Hive Workshop, last updated 10 January 2026\.<\/p>\s*<ul class="hive-card-list">/);
+});
+
+Deno.test('no page loads an image from Hive', async () => {
+  for (const file of await htmlFiles(root)) {
+    const html = await Deno.readTextFile(file);
+    assert(!/<img\b[^>]*\ssrc(set)?="[^"]*hiveworkshop\.com/i.test(html), `Hive image in ${file.pathname}`);
+  }
+});

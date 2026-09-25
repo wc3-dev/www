@@ -111,6 +111,64 @@ them. See `docs/hive-integration.md` for the rules on third-party content.
   Configure the store with no public listing, a CORS allowlist for the site's
   origins, and hotlink protection.
 
+### Tutorials
+
+The "Getting started with Warcraft III: Reforged modding" track lives at
+`/learn/`. Its lessons build one map, "Defend the Village", using only the
+World Editor.
+
+- Lessons are `src/content/tutorials/<chapter>/<lesson>.md`; the chapters and
+  their order are listed in `src/data/tutorials.ts`, and `next.md` is the
+  closing page.
+- `docs/tutorial-writing.md` covers the frontmatter, the lesson directives
+  (`:kbd`, `:menu`, `:::steps`, callouts, `:::checkpoint`, `::shot`), the house
+  style, and the facts every lesson shares about the map.
+- `deno task tutorial:check` validates the lessons, then lists the screenshots
+  still to capture and the editor facts marked `<!-- verify: … -->` to confirm.
+- To add a screenshot, save a PNG at the path its `::shot` names (for example
+  `src/content/tutorials/editor-basics/create-your-map/new-map-dialog.png`) and
+  rebuild: its placeholder becomes an optimised image.
+
+### Hive activity
+
+The "New on Hive" group on `/resources/` and the "Latest on Hive" card on the
+home page list recent Hive Workshop resources as titles, authors, categories,
+dates and outbound links. See `docs/hive-integration.md` for the rules and the
+current status.
+
+- `src/data/hive-activity.json` is the committed snapshot the views read (at
+  most 30 entries, newest first). When it has no entries, neither view renders.
+- `src/data/hive-optout.json` lists the authors and Hive URLs to leave out.
+  Edit it by hand when someone asks to be left out, then run
+  `deno task hive:import` with no feed files to drop their entries from the
+  snapshot.
+- People ask to be left out through the contact link in the "Authors on Hive"
+  note on `/resources/`. It is `HIVE_CONTACT_URL` in `src/lib/hive.ts`, the
+  only place it is set; `docs/hive-outreach.md` points Hive staff to that note
+  rather than repeating the address. `HIVE_CONTACT_URL` must be publicly
+  reachable before the snapshot has entries or the outreach message goes out;
+  the issues page of a private repository is not.
+- To refresh the snapshot, open Hive's RSS or Atom feeds in a browser and save
+  each one to a file, then run:
+
+  ```sh
+  deno task hive:import path/to/feed.xml path/to/other.xml --dry-run   # print the report only
+  deno task hive:import path/to/feed.xml path/to/other.xml             # rewrite the snapshot
+  deno task hive:import                                                # re-apply the opt-out register only
+  ```
+
+  Feed paths resolve against the directory you run the command from. It
+  merges the feeds into the snapshot by URL, leaves out opted-out entries, cuts
+  the list to 30, sets `updated` to today, and reports what was added, updated,
+  left out and cut. With no feed files it only drops entries the opt-out
+  register now matches and keeps `updated` as it was. Commit the snapshot
+  afterwards.
+- The command never touches the network: its task has no `--allow-net` and
+  may write only the snapshot.
+- The build fails if the snapshot contains an entry the opt-out register
+  matches; run `deno task hive:import` (no feed files needed) to drop it, or
+  remove it from the snapshot by hand.
+
 Add documentation as Markdown with `title` and `description` frontmatter, then
 add its slug to the sidebar in `astro.config.ts`.
 
@@ -125,7 +183,7 @@ Shared font definitions live in `src/styles/fonts.css`.
 
 ## Documentation migration
 
-All eight Markdown pages from `w3ts-framework/docs` are now hosted here. The former
+All eight Markdown pages from `wc3.dev-framework/docs` are now hosted here. The former
 `docs/README.md` becomes `/framework/docs/`. Internal links use the website routes;
 contributing and changelog links point to the framework source repository.
 The framework's MIT license is retained in `LICENSE` for the migrated material.
