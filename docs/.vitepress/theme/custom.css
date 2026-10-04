@@ -1,0 +1,128 @@
+@font-face {
+  font-family: 'Mona Sans';
+  src: url('/fonts/mona-sans.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mona Sans';
+  src: url('/fonts/mona-sans-italic.woff2') format('woff2');
+  font-style: italic;
+  font-weight: 200 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Monaspace Argon';
+  src: url('/fonts/monaspace-argon-v1.400.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+}
+
+:root {
+  --vp-font-family-base: 'Mona Sans', system-ui, sans-serif;
+  --vp-font-family-mono: 'Monaspace Argon', ui-monospace, monospace;
+}
+
+/* The site is dark only (`appearance: 'force-dark'` in the config), so only the dark colours are set. They come
+   from the artwork (mw.gif and the wordmark): its navy and stone blues for surfaces and text, the glow of the water
+   for links, the blue of the letters for buttons. Colours not in the artwork are steps between two that are. Every
+   pairing of text and surface is at 4.5 to 1 or more, except the tertiary text (text-3), which is at 3.5 to 1 as in
+   the default theme. */
+.dark {
+  --vp-c-bg: #0a1422;
+  --vp-c-bg-alt: #050c18;
+  --vp-c-bg-elv: #13233a;
+  --vp-c-bg-soft: #13233a;
+
+  --vp-c-border: #354d6c;
+  --vp-c-divider: #1b304c;
+  --vp-c-gutter: #050c18;
+
+  --vp-c-text-1: #d6edf6;
+  --vp-c-text-2: #8fa8c8;
+  --vp-c-text-3: #576e8e;
+
+  --vp-c-default-1: #354d6c;
+  --vp-c-default-2: #283e5c;
+  --vp-c-default-3: #1b304c;
+  --vp-c-default-soft: rgba(87, 110, 142, 0.16);
+
+  --vp-c-brand-1: #1ebff9;
+  --vp-c-brand-2: #28e4f8;
+  --vp-c-brand-3: #176094;
+  --vp-c-brand-soft: rgba(30, 191, 249, 0.16);
+  --vp-button-brand-hover-bg: #0d5fb8;
+  --vp-button-brand-active-bg: #0d5fb8;
+}
+
+/* The wordmark is 256 by 96 pixels; at 3rem it is drawn at exactly half size. Its letters sit below the middle of
+   the image, so it is moved up to look centred in the bar. */
+:root {
+  --vp-nav-logo-height: 3rem;
+}
+
+.VPNavBar .VPNavBarTitle .logo {
+  position: relative;
+  top: -5px;
+  margin-right: 0;
+}
+
+/* Landing page. The image already carries the name, so the heading is kept for screen readers and search engines
+   but not drawn. On a wide screen the image is to the left of the tagline and the pair is centred on the page; on
+   a narrow one the image stays above the tagline. */
+.VPHero .main .heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.VPHero .main .tagline {
+  padding-top: 2.5rem;
+}
+
+@media (min-width: 60rem) {
+  .VPHero .main .tagline {
+    padding-top: 0;
+    max-width: none;
+  }
+
+  .VPHero .container {
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .VPHero .container .image {
+    order: 1;
+    flex: none;
+    width: 16rem;
+    min-height: 16rem;
+  }
+
+  .VPHero .container .image-container {
+    height: 16rem;
+    transform: none;
+  }
+
+  /* The text takes only the room it needs, so that the image and the text are centred as one group. */
+  .VPHome .VPHero.has-image .container .main {
+    order: 2;
+    flex: 0 1 auto;
+    width: auto;
+    max-width: none;
+  }
+}
+
+.VPHero .image-container .image-src {
+  max-width: 16rem;
+  max-height: 16rem;
+  image-rendering: pixelated;
+}
