@@ -1,4 +1,10 @@
+import type {
+  CompiledPage,
+  NavSection,
+  PageRecord,
+} from "../../shared/types.ts";
 import { navigation } from "../../docs/navigation.ts";
+import { buildSidebars } from "../../docs/sidebar.ts";
 import { compileDocumentation, compileLandingPage } from "./compile.ts";
 import { buildSearchPayload } from "../../docs/search/index.ts";
 
@@ -12,7 +18,10 @@ async function removeTemporary(path: URL): Promise<void> {
   }
 }
 
-async function listFiles(directory: URL, prefix = ""): Promise<string[]> {
+export async function listFiles(
+  directory: URL,
+  prefix = "",
+): Promise<string[]> {
   const files: string[] = [];
   for await (const entry of Deno.readDir(directory)) {
     const relative = `${prefix}${entry.name}`;
@@ -28,29 +37,55 @@ async function listFiles(directory: URL, prefix = ""): Promise<string[]> {
   return files.sort();
 }
 
-export async function prepareDocumentation(root: URL = repo): Promise<void> {
-  const content = new URL("docs/content/", root);
+/** Every Markdown file under a content folder, keyed by its path from that folder. */
+export async function readSources(content: URL): Promise<Map<string, string>> {
   const sources = new Map<string, string>();
   for (const source of await listFiles(content)) {
     if (source.endsWith(".md")) {
       sources.set(source, await Deno.readTextFile(new URL(source, content)));
     }
   }
-  const assets = new Set(
-    (await listFiles(new URL("shared/static/", root))).map((asset) =>
-      `/${asset}`
-    ),
-  );
-  const pages = await compileDocumentation(sources, navigation, assets);
+  return sources;
+}
+
+/** The public paths of the files under `shared/static/` of a checkout ("/fonts/x.woff2"). */
+export async function staticAssetPaths(root: URL): Promise<Set<string>> {
+  const files = await listFiles(new URL("shared/static/", root));
+  return new Set(files.map((file) => `/${file}`));
+}
+
+export interface PrepareOptions {
+  /** The checkout that holds shared/static/ and receives docs/generated/. */
+  root?: URL;
+  /** The folder of Markdown. Default: docs/content/ under the root. */
+  content?: URL;
+  navigation?: readonly NavSection[];
+}
+
+/** What the Worker bundles of a page. Search text and links stay in the build. */
+export function pageRecord(page: CompiledPage): PageRecord {
+  const { source, url, title, description, section, html, headings } = page;
+  return { source, url, title, description, section, html, headings };
+}
+
+export async function prepareDocumentation(
+  options: PrepareOptions = {},
+): Promise<void> {
+  const root = options.root ?? repo;
+  const content = options.content ?? new URL("docs/content/", root);
+  const sections = options.navigation ?? navigation;
+  const sources = await readSources(content);
+  const assets = await staticAssetPaths(root);
+  const pages = await compileDocumentation(sources, sections, assets);
   const landingPage = compileLandingPage(pages, assets);
   const search = JSON.stringify(buildSearchPayload([landingPage, ...pages]));
   const module =
-    'import type { CompiledPage } from "../../shared/types.ts";\n\n' +
-    `export const pages: readonly CompiledPage[] = ${
-      JSON.stringify(pages, null, 2)
+    'import type { PageRecord, Sidebars } from "../../shared/types.ts";\n\n' +
+    `export const pages: readonly PageRecord[] = ${
+      JSON.stringify(pages.map(pageRecord), null, 2)
     };\n\n` +
-    `export const landingPage: CompiledPage = ${
-      JSON.stringify(landingPage, null, 2)
+    `export const sidebars: Sidebars = ${
+      JSON.stringify(buildSidebars(pages, sections), null, 2)
     };\n`;
   // Validate once, stage both outputs, then publish while the Vite plugin withholds
   // requests and reloads. Retain the previous pair if filesystem publication fails.

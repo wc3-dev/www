@@ -11,12 +11,11 @@ import {
   compileLandingPage,
 } from "../tools/content/compile.ts";
 import { resolveContentLink } from "../tools/content/links.ts";
+import { flatSection } from "./support/site.ts";
 
-const sections: readonly NavSection[] = [{
-  id: "moonwell",
-  label: "moonwell",
-  sources: ["moonwell/index.md"],
-}];
+const sections: readonly NavSection[] = [
+  flatSection("moonwell", ["moonwell/index.md"]),
+];
 const simple = new Map([[
   "moonwell/index.md",
   "# Moonwell\n\n## A *heading*\n\n## A heading\n\n## Ångström\n",
@@ -48,10 +47,9 @@ Deno.test("fixture renders Markdown, escaped HTML and searchable code without ne
     "moonwell/getting-started.md",
     "# Start\n",
   ]]);
-  const nav: readonly NavSection[] = [{
-    ...sections[0],
-    sources: [...sources.keys()],
-  }];
+  const nav: readonly NavSection[] = [
+    flatSection("moonwell", [...sources.keys()]),
+  ];
   const [page] = await compileDocumentation(sources, nav, new Set(["/mw.gif"]));
   for (
     const html of [
@@ -154,18 +152,16 @@ for (
       sections,
       "moonwell/other.md",
     ],
-    ["duplicate nav source", simple, [{
-      ...sections[0],
-      sources: ["moonwell/index.md", "moonwell/index.md"],
-    }], "moonwell/index.md"],
-    ["missing nav source", simple, [{
-      ...sections[0],
-      sources: ["moonwell/index.md", "moonwell/absent.md"],
-    }], "moonwell/absent.md"],
+    ["duplicate nav source", simple, [
+      flatSection("moonwell", ["moonwell/index.md", "moonwell/index.md"]),
+    ], "moonwell/index.md"],
+    ["missing nav source", simple, [
+      flatSection("moonwell", ["moonwell/index.md", "moonwell/absent.md"]),
+    ], "moonwell/absent.md"],
     [
       "duplicate canonical URL",
       new Map([["moonwell.md", "# One"], ["moonwell/index.md", "# Two"]]),
-      [{ ...sections[0], sources: ["moonwell.md", "moonwell/index.md"] }],
+      [flatSection("moonwell", ["moonwell.md", "moonwell/index.md"])],
       "moonwell/index.md",
     ],
   ] as const
@@ -184,10 +180,9 @@ Deno.test("links resolve against complete page records preserving queries and fr
     "moonwell/getting-started.md",
     "# Start\n\n## Install\n",
   ]]);
-  const nav: readonly NavSection[] = [{
-    ...sections[0],
-    sources: [...sources.keys()],
-  }];
+  const nav: readonly NavSection[] = [
+    flatSection("moonwell", [...sources.keys()]),
+  ];
   const pages = await compileDocumentation(sources, nav, new Set(["/mw.gif"]));
   for (
     const [target, expected] of [
@@ -229,6 +224,135 @@ Deno.test("links resolve against complete page records preserving queries and fr
   }
 });
 
+for (const origin of ["https://wc3.dev", "https://www.wc3.dev"]) {
+  Deno.test(`compiler accepts actual home targets at ${origin}`, async () => {
+    const targets = [
+      `${origin}/?from=docs%2Fhome`,
+      `${origin}/?from=docs%2Fhome#main-content`,
+      `${origin}/mw.gif?v=1#frame`,
+      `${origin}/fonts/Jersey10-Regular.woff2?v=2`,
+    ];
+    const [page] = await compileDocumentation(
+      new Map([[
+        "moonwell/index.md",
+        `# Moonwell\n\n${
+          targets.map((target) => `[Home](${target})`).join("\n")
+        }\n` +
+        `\n![Moonwell](${origin}/mw.gif?v=1#frame)\n`,
+      ]]),
+      sections,
+      new Set(["/mw.gif", "/fonts/Jersey10-Regular.woff2"]),
+    );
+    for (const target of targets) {
+      assertStringIncludes(page.html, `href="${target}"`);
+      assertEquals(page.links.some((link) => link.target === target), true);
+    }
+    assertStringIncludes(page.html, `src="${origin}/mw.gif?v=1#frame"`);
+  });
+}
+
+Deno.test("compiler preserves the actual docs landing fragment", async () => {
+  const [page] = await compileDocumentation(
+    new Map([[
+      "moonwell/index.md",
+      "# Moonwell\n\n[Landing](https://docs.wc3.dev/?q=1#main-content)\n",
+    ]]),
+    sections,
+    new Set(),
+  );
+  assertStringIncludes(page.html, 'href="/?q=1#main-content"');
+});
+
+Deno.test("compiler canonicalizes known overview aliases before checking fragments", async () => {
+  const nav: readonly NavSection[] = ["moonwell", "wrappers", "systems"].map(
+    (id) => flatSection(id as NavSection["id"], [`${id}/index.md`]),
+  );
+  const targets: [string, string][] = [];
+  for (const section of nav) {
+    for (const alias of ["index", "index.html"]) {
+      for (
+        const prefix of [
+          "../",
+          "",
+          "/",
+          "https://docs.wc3.dev/",
+          "https://wc3.dev/",
+          "https://www.wc3.dev/",
+        ]
+      ) {
+        targets.push([
+          `${prefix}${section.id}/${alias}?from=docs%2Falias#details`,
+          `/${section.id}/?from=docs%2Falias#details`,
+        ]);
+      }
+    }
+  }
+  targets.push([
+    "./index.html?from=local#details",
+    "/moonwell/?from=local#details",
+  ]);
+  const sources = new Map(nav.map((section) => [
+    `${section.id}/index.md`,
+    `# ${section.label}\n\n## Details\n` +
+    (section.id === "moonwell"
+      ? targets.map(([target]) => `\n[Overview](${target})`).join("")
+      : ""),
+  ]));
+  const [page] = await compileDocumentation(sources, nav, new Set());
+  for (const [target] of targets) {
+    assertEquals(page.links.some((link) => link.target === target), true);
+  }
+  assertEquals(
+    [...page.html.matchAll(/<a href="([^"]*)"/g)].map((match) => match[1]),
+    targets.map(([, expected]) => expected),
+  );
+});
+
+Deno.test("compiler still rejects missing home targets and invalid overview fragments", async () => {
+  for (
+    const target of [
+      "https://wc3.dev/missing",
+      "https://www.wc3.dev/missing",
+      "https://wc3.dev/missing.gif",
+      "https://www.wc3.dev/fonts/missing.woff2",
+      "https://wc3.dev/?q=1#absent",
+      "https://www.wc3.dev/?q=1#absent",
+      "https://docs.wc3.dev/?q=1#absent",
+      "https://wc3.dev/?q=1#%FF",
+      "https://docs.wc3.dev/moonwell/index.html?q=1#absent",
+      "https://wc3.dev/moonwell/index?q=1#absent",
+      "https://www.wc3.dev/moonwell/index.html?q=1#absent",
+      "https://docs.wc3.dev/moonwell/index.html?q=1#%FF",
+      "./index#absent",
+      "/unknown/index",
+      "/unknown/index.html",
+      "/moonwell/missing/index.html",
+      "https://docs.wc3.dev/unknown/index.html",
+      "https://wc3.dev/moonwell/missing/index",
+      "https://www.wc3.dev/unknown/index",
+    ]
+  ) {
+    const error = await assertRejects(() =>
+      compileDocumentation(
+        new Map([[
+          "moonwell/index.md",
+          `# Moonwell\n\n[Missing](${target})\n`,
+        ]]),
+        sections,
+        new Set(["/mw.gif"]),
+      )
+    );
+    assertInstanceOf(error, Error);
+    assertStringIncludes(error.message, "moonwell/index.md");
+    assertStringIncludes(error.message, target);
+    if (target.includes("#absent")) {
+      assertStringIncludes(error.message, "fragment");
+    } else if (target.includes("#%FF")) {
+      assertStringIncludes(error.message, "invalid fragment encoding");
+    }
+  }
+});
+
 Deno.test("heading slugs never collide with authored numeric suffixes", async () => {
   const [page] = await compileDocumentation(
     new Map([["moonwell/index.md", "# Moonwell\n\n## A\n\n## A\n\n## A-1\n"]]),
@@ -248,11 +372,10 @@ Deno.test("clean section links fall back to canonical site paths after source-re
     "moonwell/index.md",
     "# Moonwell\n\n[Wrappers](wrappers/)\n",
   ], ["wrappers/index.md", "# Wrappers\n"]]);
-  const nav: readonly NavSection[] = [sections[0], {
-    id: "wrappers",
-    label: "wrappers",
-    sources: ["wrappers/index.md"],
-  }];
+  const nav: readonly NavSection[] = [
+    sections[0],
+    flatSection("wrappers", ["wrappers/index.md"]),
+  ];
   const pages = await compileDocumentation(sources, nav, new Set());
   assertStringIncludes(pages[0].html, 'href="/wrappers/"');
 });
@@ -262,11 +385,11 @@ Deno.test("landing record prepares shared searchable copy and validates its link
     "wrappers/index.md",
     "# Wrappers",
   ], ["systems/index.md", "# Systems"]]);
-  const nav: readonly NavSection[] = [sections[0], {
-    id: "wrappers",
-    label: "wrappers",
-    sources: ["wrappers/index.md"],
-  }, { id: "systems", label: "systems", sources: ["systems/index.md"] }];
+  const nav: readonly NavSection[] = [
+    sections[0],
+    flatSection("wrappers", ["wrappers/index.md"]),
+    flatSection("systems", ["systems/index.md"]),
+  ];
   const pages = await compileDocumentation(sources, nav, new Set());
   const assets = new Set(["/mw.gif", "/mw-moonwell.png", "/mw-text-edit.png"]);
   const landing = compileLandingPage(pages, assets);

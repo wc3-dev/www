@@ -39,20 +39,45 @@ export function buildSearchPayload(
   pages: readonly CompiledPage[],
 ): SearchPayload {
   const entries: SearchEntry[] = [];
+  // What the index reads. A section's 'title' stays empty: were the page's title there, a match on it would tie the
+  // page with every one of its sections. The title is in the lightly boosted 'page' field instead, so that a
+  // qualified name (Unit.kill) finds a section whose own words do not say its page's name.
+  const documents: {
+    id: string;
+    title: string;
+    heading: string;
+    text: string;
+    page: string;
+  }[] = [];
   for (const page of pages) {
-    entries.push({
-      id: page.source,
-      url: page.url,
-      title: page.title,
-      heading: "",
-      text: page.text,
-      excerpt: excerpt(page.text),
-    });
     const boundaries = [
       ...page.html.matchAll(
         /<h([23])\b[^>]*\bid="([^"]*)"[^>]*>[\s\S]*?<\/h\1>/g,
       ),
     ];
+    // A page's own entry is its title and what stands before its first h2 or h3. A record without HTML (the
+    // landing page) is indexed by its text.
+    const titleEnd = page.html.indexOf("</h1>");
+    const intro = page.html
+      ? sectionText(page.html.slice(
+        titleEnd < 0 ? 0 : titleEnd + 5,
+        boundaries[0]?.index ?? page.html.length,
+      ))
+      : page.text;
+    entries.push({
+      id: page.source,
+      url: page.url,
+      title: page.title,
+      heading: "",
+      excerpt: excerpt(intro),
+    });
+    documents.push({
+      id: page.source,
+      title: page.title,
+      heading: "",
+      text: intro,
+      page: "",
+    });
     for (let i = 0; i < boundaries.length; i++) {
       const match = boundaries[i];
       const heading = page.headings.find((heading) => heading.id === match[2]);
@@ -63,17 +88,24 @@ export function buildSearchPayload(
         match.index! + match[0].length,
         boundaries[i + 1]?.index ?? page.html.length,
       ));
+      const id = `${page.source}#${heading.id}`;
       entries.push({
-        id: `${page.source}#${heading.id}`,
+        id,
         url: `${page.url}#${heading.id}`,
         title: page.title,
         heading: heading.text,
-        text,
         excerpt: excerpt(text),
+      });
+      documents.push({
+        id,
+        title: "",
+        heading: heading.text,
+        text,
+        page: page.title,
       });
     }
   }
-  const index = new MiniSearch<SearchEntry>(searchOptions);
-  index.addAll(entries);
+  const index = new MiniSearch(searchOptions);
+  index.addAll(documents);
   return { index: JSON.stringify(index), entries };
 }

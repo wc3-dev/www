@@ -1,5 +1,5 @@
 import { createDocsApp } from "./app.tsx";
-import { pages } from "./generated/pages.ts";
+import { pages, sidebars } from "./generated/pages.ts";
 
-export const app = createDocsApp(pages);
+export const app = createDocsApp(pages, sidebars);
 export default app;
