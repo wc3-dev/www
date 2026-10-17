@@ -1,8 +1,8 @@
 # Assets
 
-After this page you can import models, textures and icons into the map, give a file an exact path there, and see
-what you imported in World Editor. An asset is a file under `assets/` in the project folder, or a file that a
-library ships for the map.
+After this page you can import models, textures and icons into the map, give a file an exact path there, see what
+you imported in World Editor, and check or convert a model to glTF. An asset is a file under `assets/` in the
+project folder, or a file that a library ships for the map.
 
 ## Files under assets/
 
@@ -302,11 +302,95 @@ Without a file, a project that has no model among its assets gets the line `No m
 cannot be read is an error. Without a file, the report comes first: in the place of that model's lines it has one
 line that starts with `(unreadable:` and gives the reason.
 
+## Converting a model to glTF
+
+`moonwell assets:gltf <model> [output]` converts a `.mdx` or `.mdl` model to glTF 2.0, for viewing or editing in
+tools such as Blender. Without `[output]`, it writes a single `.glb` file beside the model:
+
+```sh
+moonwell assets:gltf assets/Models/Knight.mdx
+```
+
+```text
+Wrote assets/Models/Knight.glb.
+```
+
+Give a second path ending in `.glb` or `.gltf` to write there instead. When the output path ends in `.gltf`,
+Moonwell writes `<stem>.gltf`, `<stem>.bin` and each decoded texture as `<name>.png` in the output file's folder:
+
+```sh
+moonwell assets:gltf assets/Models/Knight.mdx out/Knight.gltf
+```
+
+```text
+Wrote out/Knight.gltf.
+```
+
+Before it writes anything, Moonwell checks every file it is about to write. If the `.bin` or a `.png` would replace
+the model or a texture the model was converted from, as `Knight.png` would beside a `Knight.png` texture, the
+command stops with an error that names that file. Choose an output in another folder, or a `.glb`. Writing again
+over the files of an earlier conversion is allowed.
+
+Both Classic SD (version 800) and Reforged HD (versions 900 to 1800) models are converted:
+
+- **Meshes and coordinates.** Geosets are converted from Warcraft III's right-handed Z-up coordinates to glTF's
+  right-handed Y-up coordinates via `(x, y, z) -> (y, z, x)`. In a Reforged HD model with level-of-detail
+  geosets, only the base level (`LOD` 0, or the lowest `LOD` present) is exported.
+- **Skeletons, weights and animations.** Bones, helpers and other scene nodes keep their hierarchy and pivot
+  offsets under one `Root` node, the skin's `skeleton`, with up to four joint weights per vertex (from Classic
+  matrix groups or Reforged HD skin data). Each sequence becomes one animation, with translation, rotation and
+  scaling tracks sampled from the keys inside that sequence alone, Hermite, Bezier and Squad curves included. The
+  first and last of those keys hold to the animation's start and end, and a track with no key in the sequence
+  holds its rest value: no offset, no rotation, a scale of 1. A track of a global sequence is sampled over the
+  global sequence's length and repeated at that length for as long as the animation runs, which is as long as its
+  own sequence.
+- **Geoset visibility.** A geoset that a sequence shows and hides is written with the glTF extension
+  `KHR_node_visibility` and animated, step by step, through `KHR_animation_pointer`. A geoset with no key in a
+  sequence keeps its geoset animation's own alpha. A viewer without those extensions shows every geoset at once.
+- **Textures and materials.** Every texture that a material of an exported geoset uses must be found, or be one of
+  the game's own files, or the command stops with an error (textures only referenced by particle or ribbon emitters, environment slots or unexported
+  materials, and the placeholder emissive texture `Textures/Black32.blp`, are skipped):
+  - A replaceable slot with no path is synthesized in memory for Player 1 Red (`#FF0303`): `ReplaceableId 1` (team
+    colour) as a solid 8×8 PNG and `ReplaceableId 2` (team glow) as a 64×64 radial PNG. Any other replaceable
+    slot, such as a cliff's or a tree's, becomes a grey 8×8 PNG named `replaceable_<id>.png`, and the command
+    prints a warning before the line `Wrote`:
+
+    ```text
+    warning: assets/Models/Tree.mdx: ReplaceableId 31 has no texture file to convert, so a grey placeholder stands in for it.
+    ```
+
+  - A texture with a path is searched first in the assets of the project and of its libraries (when the command
+    runs in a project), then at that path below the model's folder, then by its file name in the model's folder,
+    then below the folder the command runs in, and last below `assets/` there. At each place Moonwell matches
+    without regard to letter case, tries the file's own ending first and then the same stem with `.blp`, `.dds`,
+    `.tga` and `.png`, and decodes `BLP1` (JPEG and paletted), `DDS` (`DXT1`/BC1, `DXT3`/BC2, `DXT5`/BC3,
+    `ATI2`/BC5 normal maps and uncompressed 24-bit and 32-bit), `TGA` (24-bit and 32-bit, plain and RLE) and `PNG`
+    to PNG.
+  - A texture with a path that is found nowhere, but is one of the game's files (the list that
+    [Checking a model's files](#checking-a-models-files) compares with), becomes a grey 8×8 PNG under the texture's own name, as
+    Moonwell cannot read the game's files. The command prints a warning for it before the line `Wrote`:
+
+    ```text
+    warning: assets/Models/Knight.mdx: Texture Textures\Footman.blp ships with the game, which Moonwell cannot read, so a grey placeholder stands in for it.
+    ```
+
+    Put the texture in `assets/` or beside the model to convert it with its real look.
+  - Classic SD materials map their diffuse layer and filter mode (`None` to `OPAQUE`, `Transparent` to `MASK` with
+    cutoff `0.75`, `Blend` to `BLEND`), composite a `ReplaceableId 1` team-colour layer under a `Blend` diffuse
+    layer onto one PNG, and map additive or `ReplaceableId 2` team-glow layers to `emissiveTexture`. Reforged HD
+    materials map diffuse, normal (with reconstructed `+Z` for two-channel BC5 normal maps), ORM (occlusion,
+    roughness and metallic, after compositing the team-colour alpha mask into the diffuse texture) and emissive
+    slots to glTF's metallic-roughness PBR textures. An emissive gain above 1 is written as the extension
+    `KHR_materials_emissive_strength`.
+
+The extensions are listed in the file's `extensionsUsed` and none is required, so a viewer that lacks one still
+opens the model.
+
 ## What is refused
 
 Moonwell refuses three things under `assets/`, and names the file or folder in the error. Every command that reads
-the assets fails on them: `build`, `test`, `check`, `assets:check`, `assets:sync`, in a project `assets:paths`, and
-each check of `dev`.
+the assets fails on them: `build`, `test`, `check`, `assets:check`, `assets:sync`, in a project `assets:paths` and
+`assets:gltf`, and each check of `dev`.
 
 - **A link.** A symbolic link or a Windows junction is refused at `assets` itself and anywhere below it, whatever
   it leads to ([Project layout](./project-layout#real-folders-no-links)):
@@ -333,8 +417,8 @@ library.
 ## See also
 
 - [Commands](./reference/commands): [`assets:check`](./reference/commands#assets-check),
-  [`assets:sync`](./reference/commands#assets-sync) and [`assets:paths`](./reference/commands#assets-paths), and
-  what each reads, writes and fails on.
+  [`assets:sync`](./reference/commands#assets-sync), [`assets:paths`](./reference/commands#assets-paths) and
+  [`assets:gltf`](./reference/commands#assets-gltf), and what each reads, writes and fails on.
 - [Settings](./reference/settings#assets): the rules of `assets.exclude` and `[[assets.paths]]`.
 - [Files and caches](./reference/files#asset-state): the state file under `.asset-state/`, and
   `.moonwell/library-assets/`.

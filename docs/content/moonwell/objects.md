@@ -1,8 +1,9 @@
 # Objects
 
-After this page you can add a unit, a hero, an item or an ability to the map from a file, set its fields, and use
-it in your code under a name of your own. These are the map's custom objects. They are written in
-[Pkl](https://pkl-lang.org), in the files under `objects/`.
+After this page you can add a unit, a hero, an item or an ability to the map from a file or from your gameplay code,
+set its fields, and use it in your code under a name of your own. These are the map's custom objects. They are
+written in [Pkl](https://pkl-lang.org), in the files under `objects/`, or declared in the code that uses them
+([Objects declared in code](#objects-declared-in-code)).
 
 ## Object files
 
@@ -90,7 +91,7 @@ package that the object files are written for, and its version. This is the file
 amends "pkl:Project"
 
 dependencies {
-  ["moonwell"] { uri = "package://pkg.pkl-lang.org/github.com/mdlsvensson/moonwell/moonwell@0.12.4" }
+  ["moonwell"] { uri = "package://pkg.pkl-lang.org/github.com/mdlsvensson/moonwell/moonwell@0.12.10" }
 }
 ```
 
@@ -306,6 +307,10 @@ mw.on_main ->
   CreateUnit Player(0), objects.units.captain, 0, 0, 270
 ```
 
+The module holds the objects of the object files. An object declared in code is not in it: its id is what
+`moonwell.declare` returns, and in the game what `moonwell.id_of` returns
+([Objects declared in code](#objects-declared-in-code)).
+
 `build`, `test` and `dev` write the module again whenever it does not match the objects, so you never edit it.
 `check` and `objects:check` do not write the module. They compare it with the objects, and fail when it does not
 match, or when it is missing in a project with objects. This is the error for a module that does not match:
@@ -340,7 +345,7 @@ Value: "600"
 
 556 | hitPointsMaximumBase: Int?
                             ^^^
-at moonwell.generated.UnitProps#hitPointsMaximumBase (projectpackage://pkg.pkl-lang.org/github.com/mdlsvensson/moonwell/moonwell@0.12.4#/generated/UnitProps.pkl)
+at moonwell.generated.UnitProps#hitPointsMaximumBase (projectpackage://pkg.pkl-lang.org/github.com/mdlsvensson/moonwell/moonwell@0.12.10#/generated/UnitProps.pkl)
 
 8 | hitPointsMaximumBase = "600"
                            ^^^^^
@@ -407,17 +412,278 @@ same field. `storm` has the id that `blessing` has, and it sets a field of Holy 
 [`moonwell objects:eval`](./reference/commands#objects-eval) prints the objects as Moonwell reads them, field by
 field.
 
+## Objects declared in code
+
+An object can also be declared in the gameplay code that uses it, with the function `declare` of the `moonwell`
+module. A build reads the declaration and adds the object to the map's object data, beside the objects of the object
+files. In the game, `declare` returns the object's id, as the integer that the game's functions take:
+
+```yue
+import "moonwell" as mw
+
+bolt = mw.declare {
+  category: "abilities"
+  key: "bolt"
+  base: "AHtb"
+  heroes: {"Hpal"}
+  fields: {
+    name: "Bolt"
+    tooltipLearn: "Learn Bolt - [Level %d]"
+    tooltipNormal: (level) -> "Bolt - [Level #{level}]"
+    levels: 3
+    cooldown: (level) -> 10 - level
+  }
+}
+
+mw.on_main ->
+  print "Bolt is", bolt
+```
+
+The ability copies Storm Bolt, has three levels with a cooldown of 9, 8 and 7 seconds, and is added to the abilities
+that the Paladin can learn.
+
+### What a declaration takes
+
+`declare` takes a table with these settings, and a second argument, `level`, which
+[The place of a declaration](#the-place-of-a-declaration) describes:
+
+| Setting | What it is |
+| --- | --- |
+| `category` | The kind of the object: `"heroes"`, `"units"`, `"buildings"`, `"items"`, `"abilities"`, `"buffs"` or `"upgrades"` |
+| `key` | A text that is not empty, and is used once in its kind, over the object files and the code. It may hold any characters, such as `spells.bolt` |
+| `base` | The standard object that the new one copies, by its rawcode, as in an object file |
+| `id` | Optional: the object's rawcode, which follows the rules of an `id` in an object file. Without it, Moonwell chooses one ([Ids of declared objects](#ids-of-declared-objects)) |
+| `heroes` | Optional, and for an ability only: the standard heroes that can learn it ([Heroes that learn a declared ability](#heroes-that-learn-a-declared-ability)) |
+| `fields` | A table of field names and their values. Write `fields: {}` for an object that sets none |
+
+A setting that is not one of these six is an error, and so is a `category`, a `key`, a `base`, an `id` or a `fields`
+of the wrong form.
+
+### Fields of a declaration
+
+`fields` names each field as `properties` does in an object file: by its friendly name, such as
+`hitPointsMaximumBase`, or by its rawcode, such as `uhpm`. Moonwell checks the fields as it checks `properties`
+([Fields of some abilities](#fields-of-some-abilities-properties)): a name must be a field that applies to the base,
+a field is set once, and a value must fit its field and the object's level count. A value is one of these:
+
+- **`true`, `false`, a number or a text.** It sets the field, as in an object file. A number must be finite.
+- **A list,** such as `{8, 7, 6}`. On a field with levels it sets the levels 1, 2 and so on, and on a list field it
+  sets the list, as a `List` does in an object file. The list may hold lists in its turn: on a list field with
+  levels, such as the `buffs` of an ability, `{{"B000"}, {"B000", "B001"}}` sets one list for each level, as a `List`
+  of lists does in Pkl.
+- **A function of the level.** The build calls it for each level from 1 to the `levels` of the same `fields`, and
+  the field takes at each level what the function returns there: `true`, `false`, a number, a text, or a list of
+  those. On a list field with levels, what it returns is that level's list, also when it is one text:
+  `buffs: (level) -> "B000"` gives every level the list `B000`.
+- **`moonwell.id_of(category, key)`,** another declared object. The build writes that object's id in its place. It
+  may be the value, an entry of a list or of a list of lists, and what a function of the level returns
+  ([Naming another declared object](#naming-another-declared-object)).
+
+A function of the level needs the field `levels` in the same `fields`, under that name, as a whole number of 1 or
+more: without it the declaration is an error. `levels` also sets the object's level count, as it does in an object
+file. To keep the value that the base has, leave the field out.
+
+### Ids of declared objects
+
+Moonwell chooses the id of a declaration that has no `id`: a letter for the kind, then three characters of `0` to
+`9` and `A` to `Z`, the first that no standard object, no custom object of the source map, no object of the object
+files and no other declaration has. The letter is `H` for a hero, `u` for a unit, `b` for a building, `I` for an
+item, `A` for an ability, `B` for a buff and `R` for an upgrade.
+
+A build writes the ids into `src/generated/declared-ids.json`, the file of declared ids, and the next build gives
+each key the id that the file holds for it, while no other object has that id. So a declaration keeps its id as long
+as its key is the same. For the example above, in a project with no other custom ability, the file is this:
+
+```json
+{
+  "abilities": {
+    "bolt": "A000"
+  }
+}
+```
+
+A declaration with an `id` of its own is in the file too. **Commit the file** with the code. `build`, `test` and
+`dev` write it when it does not match the declarations, and remove it when the code declares nothing. `check`
+compares it and writes nothing. It fails when the file does not match the declarations, when it is missing, and
+when it is there in a project that declares nothing:
+
+```text
+error: src/generated/declared-ids.json › The file does not match the declared objects.
+hint: Run moonwell build to update it.
+```
+
+A file that is no mapping of kinds to keys and ids, or that holds an id of the wrong form, is an error too. Its hint
+is to fix the file or delete it: the next build then chooses new ids for every declaration without an `id` of its
+own.
+
+### Naming another declared object
+
+`id_of`, a function of the `moonwell` module, names a declared object by its kind and its key:
+`moonwell.id_of(category, key)`, with a `category` of the seven kinds and a `key` that is a text that is not empty.
+In the fields of a declaration it stands for that object's id. The build gives every declared object its id, and
+then writes the id in the place of each `id_of`, as the rawcode a field takes, such as `B000`. The object that
+`id_of` names may be declared after the one that names it. This ability, a copy of Slow Aura (Tornado), carries a
+buff that is declared on the next line:
+
+```yue
+import "moonwell" as mw
+
+mw.declare category: "abilities", key: "burning.carrier", base: "Aasl", fields: {buffs: mw.id_of("buffs", "burning")}
+mw.declare category: "buffs", key: "burning", base: "Basl", fields: {tooltip: "Burning"}
+```
+
+`id_of` names the objects that the code declares. An object of the object files is not one of them: a field names
+it by its rawcode. A key that no declaration of the kind has fails the build at the line of the declaration that
+names it. With the buff's key written `burnin` in the line of the ability:
+
+```text
+error: src/main.yue:3 › abilities["burning.carrier"]: the field "buffs" names buffs["burnin"] with moonwell.id_of, and no declaration has that key.
+hint: Declare that object with moonwell.declare at the top level of a module the entry reaches, or name a key that is declared.
+```
+
+A `category` that is not one of the seven kinds, or a `key` that is not a text or is empty, fails the run that reads
+the declarations at the line that calls `id_of`, with the hint `Fix this call of moonwell.declare`, as a wrong
+declaration does ([How a build reads the declarations](#how-a-build-reads-the-declarations)). Its message begins
+`moonwell.id_of:`, such as `moonwell.id_of: the category "spells" is not one of heroes, units, buildings, items,
+abilities, buffs, upgrades.` In the game, `id_of` returns the object's id
+([Declared objects in the game](#declared-objects-in-the-game)).
+
+::: note
+On Warcraft III Reforged 3.0.0.24268, on one machine and in a single-player game, a copy of Slow Aura (Tornado) of
+one level, whose `buffs` named a declared buff with `id_of`, was given to a footman and hidden: the buff's level on
+the footman read 1, and 0 after the aura and then the buff were removed. In the game `id_of` returned the id that the
+buff's `declare` returned. A game that other machines join was not checked.
+:::
+
+### Heroes that learn a declared ability
+
+`heroes` lists standard heroes by their rawcode, such as `Hpal` for the Paladin. A build adds the ability to the
+hero abilities of each of them, in `war3map.w3u`. Where the hero's abilities were changed in World Editor, the
+ability goes after the list that the source map gives the hero, and else after the hero's standard list. An ability
+that the list holds already is not added a second time.
+
+`heroes` on an object of another kind is an error, and so is a hero that is not a standard hero, such as a custom
+one. An object file has no `heroes`.
+
+### How a build reads the declarations
+
+A build compiles the code first. Then it runs the code once, in the run that reads the declarations, with `yue -e`
+of the YueScript compiler that compiled it. It does so only when one of the modules that the entry reaches requires
+`moonwell` and the Lua of one of them names `declare`, as `.declare`, `:declare` or the text `"declare"`. In any
+other project there is no such run. In that run:
+
+- **The entry runs.** The entry runs, and every module that it requires while it loads, as when the map's script
+  loads. No hook is called. A module that only a function requires, such as a hook, does not run: its declarations
+  are not read, and in the game its `declare` raises the error that
+  [Declared objects in the game](#declared-objects-in-the-game) shows.
+- **The game is not there.** None of its natives exists, and neither do the globals of the source map's
+  `war3map.lua`. A native that is called at the top level of a module fails the build.
+- **`declare` returns `nil`.** `moonwell.declaring` is `true` during the run, and `false` in the game. Top-level
+  code must not depend on an id: use it inside functions, such as hooks, which run in the game. The example above
+  prints `bolt` in an `on_main` hook. `id_of` returns a value that only the fields of a declaration take, and not
+  the id: top-level code must not use it as a number.
+- **Output goes nowhere.** What the code prints during the run is not shown.
+
+An error that ends the run fails the build, and names the file and the line of the error. A native at the top level
+of `src/main.yue`, on line 3, gives this:
+
+```text
+error: src/main.yue:3 › attempt to call a nil value (global 'CreateUnit')
+hint: This project declares objects (it calls moonwell.declare), so the top-level code of the modules the entry reaches runs at build, with no natives: call natives inside functions.
+```
+
+The hint is one of three:
+
+- **A global that is `nil` is called,** as a native is in the run: the hint above. Move the call into a function,
+  such as a hook.
+- **A declaration is wrong,** as with a setting that `declare` does not take, a function of the level without
+  `levels`, or a key that the code declares twice: the hint says
+  `Fix this call of moonwell.declare: "Objects declared in code" in Moonwell's README says what it takes.` The
+  message says what is wrong, such as `The base "AHt" is not a four-character id.`
+- **Another error:** the hint says that the top-level code runs at build, `and this error ended that run.`
+
+In a minified build an error in a YueScript module names the file without a line. An error in a Lua module keeps
+its line.
+
+After the run, Moonwell checks each declared object as it checks the objects of the object files: its base, its
+id, its fields and their values. A problem names the file and the line of the declaration, and the object as
+`abilities["bolt"]`. A key that an object file has in the same kind is an error at the declaration, which names the
+object file. An id that two objects have names both.
+
+### The place of a declaration
+
+The line that calls `declare` is the place of the declaration, which its errors name. A function that declares for
+its caller gives `declare` a second argument, `level`: a whole number of 1 or more, which counts the levels of the
+call stack as `error` does. 1, the default, is the line that calls `declare`, and 2 the line that called the
+function that calls it. Unlike `error`, `declare` counts a tail call as a level. A call over several lines, such
+as `declare {` with its settings on the lines below, is at the line that YueScript gives the call: the one after
+`declare {`.
+
+```yue
+import "moonwell" as mw
+
+declareBolt = (key, name) ->
+  mw.declare {category: "abilities", key: key, base: "AHtb", fields: {:name}}, 2
+
+fire = declareBolt "fire_bolt", "Fire Bolt"
+frost = declareBolt "frost_bolt", "Frost Bolt"
+
+mw.on_main ->
+  print fire, frost
+```
+
+An error in the declaration of `frost_bolt` names the line `frost = declareBolt "frost_bolt", "Frost Bolt"`.
+
+### Declared objects in the game
+
+In the map, `declare` returns the id that the build gave the object of that kind and key. A call with a kind and a
+key that the build did not read, such as a call inside a function that runs only in the game, or in a module that
+only such a function requires, raises an error at the line that called `declare`. Its message names the kind and
+the key:
+
+```text
+moonwell.declare: abilities "bolt" was not declared at build: call moonwell.declare at the top level of a module the entry reaches.
+```
+
+`id_of` returns the same id as `declare`, the integer that the game's functions take, for a kind and a key that the
+build read. For any other kind and key it raises at the line that called `id_of`, with the message above, which then
+begins `moonwell.id_of:`. So a hook can name a declared object by its key:
+
+```yue
+import "moonwell" as mw
+
+mw.on_main ->
+  print "Bolt is", mw.id_of("abilities", "bolt")
+```
+
+::: note
+On Warcraft III Reforged 3.0.0.24268, on one machine and in a single-player game, an ability declared with
+`heroes: {"Hpal"}` was offered in the skill menu of the standard Paladin, and the Paladin learned it. At each of its
+three levels its cooldown was the one that a function of the level gave. The game took the ability's tooltips from
+the fields `tooltipLearn` and `tooltipNormal`, and not from `name`: a declaration that set `name` alone showed the
+tooltips of its base ability. A game that other machines join was not checked.
+:::
+
+### What the object commands do not show
+
+`moonwell objects:check` and `moonwell objects:eval` read the object files alone. An object declared in code is not
+in what they print or count, and they do not look at the file of declared ids. Your editor does not know the
+declared objects either: `generated.objects` holds the objects of the object files. A build and `moonwell check`
+read both.
+
 ## Objects made in World Editor
 
 The source map can have object data of its own: standard objects that were changed in World Editor, and custom
 objects that were made there. Moonwell keeps all of it as it is. A build copies the objects that the map's own
-`war3map.w3u` and the files like it hold, byte for byte, and adds yours after them.
+`war3map.w3u` and the files like it hold, byte for byte, and adds yours after them. The one thing a build writes into
+them is the hero abilities of a standard hero that a declared ability names in `heroes`
+([Heroes that learn a declared ability](#heroes-that-learn-a-declared-ability)).
 
 An id of yours that a custom object of the source map has already is an error:
 
 ```text
 error: objects/units.pkl › units["captain"].id: 'h000' is already the id of a custom object in the map.
-hint: Change the id in Pkl, or delete the object in World Editor.
+hint: Change the id (in Pkl, or the setting id of a declaration in code), or delete the object in World Editor.
 ```
 
 Every build starts from the source map. So an object that you take out of your object files is not in the next
@@ -430,8 +696,9 @@ and its hint is to open the map in World Editor and save it again
 
 ## What is not supported
 
-- **Changing a standard object.** An object file adds custom objects. An `id` that a standard object has is an
-  error. Change a standard object in World Editor: a build keeps the change.
+- **Changing a standard object.** An object file and a declaration add custom objects. An `id` that a standard
+  object has is an error. Change a standard object in World Editor: a build keeps the change. The one exception is
+  `heroes` on a declared ability, which adds the ability to a standard hero's abilities.
 - **Changing or removing an object made in World Editor.** A build keeps those objects as they are.
 - **Copying a custom object.** A `base` is a standard object.
 - **Doodads and destructables.** An object file has no mapping for them. A build keeps the files that the map has
@@ -450,10 +717,12 @@ and its hint is to open the map in World Editor and save it again
   `properties`, levels and value types.
 - [Commands](./reference/commands): [`objects:check`](./reference/commands#objects-check) and
   [`objects:eval`](./reference/commands#objects-eval), and what each reads, writes and fails on.
-- [Files and caches](./reference/files): [the ids module](./reference/files#src-generated), and
-  `.moonwell/objects.pkl`, the module that gathers the object files.
+- [Files and caches](./reference/files): [the ids module and the file of declared
+  ids](./reference/files#src-generated), and `.moonwell/objects.pkl`, the module that gathers the object files.
 - [Troubleshooting](./reference/troubleshooting):
-  [an ids module that is stale](./reference/troubleshooting#the-generated-ids-are-stale), and [a Pkl package of
-  another version](./reference/troubleshooting#the-program-and-the-projects-pkl-package-differ-in-version) than the
-  program.
+  [an ids module that is stale](./reference/troubleshooting#the-generated-ids-are-stale),
+  [declared ids that are stale](./reference/troubleshooting#the-declared-ids-are-stale),
+  [a build that fails in code that runs at build](./reference/troubleshooting#a-build-fails-in-code-that-runs-at-build),
+  and [a Pkl package of another
+  version](./reference/troubleshooting#the-program-and-the-projects-pkl-package-differ-in-version) than the program.
 - [Assets](./assets): the next page. It describes the files under `assets/` that a build imports into the map.

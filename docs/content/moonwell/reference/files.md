@@ -13,12 +13,13 @@ A project is the folder that holds `moonwell.toml`. Moonwell writes into five pl
 | --- | --- | --- |
 | [`.moonwell/`](#project-moonwell) | The libraries, and the files your editor and the compiler read | Left out by the template's `.gitignore` |
 | [`dist/`](#dist) | What a build makes: the staged map, the archive, the compile's cache, the log and the build lock | Left out by the template's `.gitignore` |
-| [`src/generated/`](#src-generated) | The ids module, `objects.yue` | Commit it |
+| [`src/generated/`](#src-generated) | The ids module, `objects.yue`, and the file of declared ids, `declared-ids.json` | Commit it |
 | [`moonwell.lock`](#moonwell.lock) | The commit of each library that is fetched from GitHub | Commit it |
 | [`.asset-state/`](#asset-state) | Which files of the source map `assets:sync` owns | Commit it |
 
-Three commands also write files that are yours: `init` writes the whole project, `setup` adds the editor's files
-that are missing, and `assets:sync` writes into the source map.
+Four commands also write files that are yours: `init` writes the whole project, `setup` adds the editor's files
+that are missing, `assets:sync` writes into the source map, and `assets:gltf` writes the `.glb` or `.gltf` files
+you ask for.
 
 Each of these places is a real file or folder. Moonwell refuses a link on the way to what it writes:
 [Project layout](../project-layout#real-folders-no-links) lists what is refused.
@@ -34,8 +35,9 @@ them. It is not the Moonwell folder of your machine, which has the same name and
 | `objects.pkl` | The module that gathers the object files | `build`, `test`, `check`, `dev`, `setup`, `objects:check`, `objects:eval` |
 | `types/` | The declarations your editor reads | `build`, `test`, `check`, `dev`, `setup` |
 | `yue/moonwell/macros.yue` | The macro module, `moonwell.macros` | `build`, `test`, `check`, `dev`, `setup` |
-| `libraries/<name>/` | The modules of the library `<name>` | `build`, `test`, `check`, `dev`, `setup`, `assets:check`, `assets:sync`, `assets:paths` |
-| `library-assets/<name>/` | The files the library `<name>` ships for the map | The same eight |
+| `yue/moonwell/build.lua` | The build mode, `moonwell.build`, for macros to read | `build`, `test`, `check`, `dev`, `setup` |
+| `libraries/<name>/` | The modules of the library `<name>` | `build`, `test`, `check`, `dev`, `setup`, `assets:check`, `assets:sync`, `assets:paths`, `assets:gltf` |
+| `library-assets/<name>/` | The files the library `<name>` ships for the map | The same nine |
 | `lua/` | The libraries' modules as Lua, for your editor | `build`, `test`, `check`, `dev`, and in part `setup` |
 
 `objects.pkl` is written only in a project with a `.pkl` file under `objects/`. It imports every object file, and
@@ -44,11 +46,14 @@ Moonwell runs Pkl on it to evaluate them together.
 `types/` holds four files of declarations for lua-language-server:
 
 - `natives.d.lua`: the game's types, functions and globals, from its `common.j` and `blizzard.j`.
-- `moonwell.d.lua`: the `moonwell` module, with its hooks.
-- `objects.d.lua`: the ids module, `generated.objects`, with a field for each of your objects.
+- `moonwell.d.lua`: the `moonwell` module, with its hooks, `format_error`, `declare`, `id_of` and `declaring`.
+- `objects.d.lua`: the ids module, `generated.objects`, with a field for each object of your object files.
 - `map.d.lua`: the globals and the functions that the source map's `war3map.lua` defines.
 
-The compiler and VS Code's YueScript extension find `import "moonwell.macros"` in `yue/`.
+The compiler and VS Code's YueScript extension find `import "moonwell.macros"` in `yue/`. `yue/moonwell/build.lua`
+holds `return { mode = "release" }` after `build`, and `return { mode = "dev" }` after `build --dev`, `test`,
+`check`, `dev` and `setup`. A macro reads it with `require "moonwell.build"`
+([Gameplay code](../gameplay-code#build-modes)).
 
 `<name>` is the `name` of a library's entry in `moonwell.toml`. `libraries/<name>/` holds the library's modules:
 fetched from GitHub at the entry's tag, or copied from the folder the library is read from. Beside the modules is
@@ -69,10 +74,11 @@ of the other four wrote them. A file whose module no library has is removed.
 | --- | --- | --- |
 | `dist/stage/<map.folder>/` | The staged map: the built map as a folder | `build`, `test` |
 | `dist/stage/lua/` | The compile's cache | `build`, `test`, `check`, `dev` |
+| `dist/stage/declare/war3map.lua` | The script that a build runs to read the objects that the code declares | `build`, `test`, `check`, `dev`, where the code declares objects |
 | `<build.folder>/<map.folder>` | The archive: the built map as one file. `dist/bin/map.w3x` in a new project | `build` |
 | `dist/test/<map.folder>` | The archive that `test` starts the game on, with `test.archive` | `test` |
 | `dist/moonwell.log` | The log | Every command in a project but `init` and `completion` |
-| `dist/.lock` | The build lock | `build`, `test`, `check`, `dev`, `setup`, `assets:check`, `assets:sync`, `assets:paths` |
+| `dist/.lock` | The build lock | `build`, `test`, `check`, `dev`, `setup`, `assets:check`, `assets:sync`, `assets:paths`, `assets:gltf` |
 
 **The staged map.** `build` and `test` replace `dist/stage/<map.folder>` with a copy of the source map, and write
 the planned files of the build into the copy. They do so only when the whole plan of the build stands, so a build
@@ -84,8 +90,14 @@ folder `moonwell test` starts the game on.
 bookkeeping. `.hashes.json` records which source file gave which Lua file, with a hash of the source. `.globals.json`
 records which globals each file uses, for the check of unknown globals. Moonwell compiles a file again when the file
 changed or its Lua file is gone. It compiles every file again when the compiler is another program, when minifying
-is switched on or off, when a file that holds the word `macro` changed, and when Moonwell's own macro module is
-another. A Lua file whose source is gone is removed.
+is switched on or off, when the build changes between a release and a development build, when a file that holds the
+word `macro` changed, and when Moonwell's own macro module is another. A Lua file whose source is gone is removed.
+
+**The run that reads the declarations.** Where the code declares objects, a build writes
+`dist/stage/declare/war3map.lua` and runs it once with the compiler: Moonwell's runtime and the modules that the
+entry reaches, without World Editor's part of the map's script. The run starts the entry, which runs every module
+that it requires while it loads ([Objects](../objects#how-a-build-reads-the-declarations)). The file is written again
+at every build that runs it, and the map does not get it.
 
 **The archive.** `build` writes the archive beside its place first, as `<map.folder>.tmp`, and moves it there when
 it is whole. So the place holds a whole archive or none. A build that is ended midway can leave the `.tmp` file,
@@ -111,8 +123,8 @@ behind.
 
 ### `src/generated/` {#src-generated}
 
-`src/generated/objects.yue` is the ids module: the ids of your objects, for your code to import as
-`generated.objects`. Its first line says that Moonwell wrote it and that it is not to be edited.
+`src/generated/objects.yue` is the ids module: the ids of the objects of your object files, for your code to import
+as `generated.objects`. Its first line says that Moonwell wrote it and that it is not to be edited.
 
 - `init` writes the file as the template has it, with the id of the template's one object.
 - `build`, `test` and `dev` write the file when it does not match the objects.
@@ -124,6 +136,18 @@ In a project without objects, `build`, `test` and `dev` do not make a file that 
 no failure. Moonwell writes the file with LF line ends, and compares it without regard to the line ends: a checkout
 that gave it Windows line ends matches all the same. `dev` does not watch `src/generated/`.
 
+`src/generated/declared-ids.json` is the file of declared ids: the id of each object that the code declares with
+`moonwell.declare`, by its kind and its key ([Objects](../objects#ids-of-declared-objects)). The next build gives
+each key the id that the file holds for it, so commit the file.
+
+- `build`, `test` and `dev` write the file when it does not match the declarations, and remove it when the code
+  declares nothing.
+- `check` compares it with the declarations and writes nothing. It fails when the file does not match, when it is
+  missing, and when it is there in a project whose code declares nothing.
+- `setup`, `objects:check` and `objects:eval` do not look at it.
+
+Moonwell writes this file with LF line ends too, and compares it without regard to the line ends.
+
 ### `moonwell.lock` {#moonwell.lock}
 
 `moonwell.lock` is a JSON file in the project folder. It holds a record of each library that is fetched from
@@ -132,7 +156,7 @@ that the tag named when the library was fetched, a hash of the library's modules
 ships files for the map, a hash of those as `assets`.
 
 The commands that bring the libraries up to date keep the file current: `build`, `test`, `check`, `dev`, `setup`
-and the three `assets:` commands. They write it when its content changes, and remove it when no record is left in
+and the four `assets:` commands. They write it when its content changes, and remove it when no record is left in
 it. A library that is read from a folder gets no record. A record that the file has under the library's name, from
 a time when the library was fetched, stays there.
 
@@ -169,6 +193,7 @@ The table shows what a command writes when it runs to its end. `<dir>` is the fo
 | [`assets:check`](./commands#assets-check) | The libraries | No | Yes | No | No | No | Yes | No | |
 | [`assets:sync`](./commands#assets-sync) | The libraries | No | Yes | No | No | No | Yes | No | The source map and `.asset-state/` |
 | [`assets:paths`](./commands#assets-paths) | The libraries | No | Yes | No | No | No | Yes | No | |
+| [`assets:gltf`](./commands#assets-gltf) | The libraries | No | Yes | No | No | No | Yes | No | The `.glb` file, or the `.gltf`, `.bin` and `.png` files |
 | [`settings:check`](./commands#settings-check) | No | No | No | No | No | No | No | No | |
 | [`objects:check`](./commands#objects-check) | `objects.pkl` | No | No | No | No | No | No | Pkl | |
 | [`objects:eval`](./commands#objects-eval) | `objects.pkl` | No | No | No | No | No | No | Pkl | |
@@ -181,14 +206,18 @@ Read the table with these in mind:
   the Lua modules only.
 - `objects.pkl` is written only in a project with object files.
 - For `src/generated/`, "Yes" means that the command writes `objects.yue` when the file does not match the
-  objects. In a project without objects it does not make the file. `init` writes the file as the template has it,
-  with the rest of the project.
+  objects, and `declared-ids.json` when that file does not match the declarations. In a project without objects it
+  does not make `objects.yue`, and where the code declares nothing it removes `declared-ids.json`. `init` writes
+  `objects.yue` as the template has it, with the rest of the project.
+- `dist/stage/declare/` is written by `build`, `test`, `check` and `dev` where the code declares objects, beside
+  `dist/stage/lua/`.
 - For `moonwell.lock`, "Yes" means that the command keeps the file current: it writes it when its content changes,
   and removes it when no record is left in it.
 - In the cache folder, the compiler and Pkl are written when they are downloaded: the compiler when its version is
   not in the cache and `yue.path` is not set, Pkl when Moonwell needs its own and has not got it. But for `init`,
   which always runs Pkl, a command needs Pkl only in a project with object files.
-- `assets:paths` writes these only in a project. Outside one it writes nothing.
+- `assets:paths` and `assets:gltf` write what the first eight columns name only in a project. Outside one,
+  `assets:paths` writes nothing and `assets:gltf` writes only the converted model.
 - `setup` adds an editor's file only where it is missing. To `.gitignore` it adds only the lines the file lacks,
   and to `.luarc.json` only the entries that three of its lists lack: `runtime.path`, `workspace.library` and
   `workspace.ignoreDir` ([Editor setup](../editor-setup#what-else-setup-does)).
