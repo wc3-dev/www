@@ -5,22 +5,18 @@ description: Install Moonwell, create a map from the template, and run it in War
 
 ## Prerequisites
 
-Moonwell requires:
-
-- The **.NET 10 SDK** (`dotnet --version` 10.0 or later)
-- **Warcraft III: Reforged** 3.0.1
+- [The .NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Warcraft III: Reforged 3.0.1](https://warcraft3.blizzard.com/)
 - `common.j` and `Blizzard.j` in `Documents\Warcraft III\JassHelper`
 
-Install the project template and the `moonwell` command once:
+## Installation
 
 ```sh
 dotnet new install Moonwell.Templates
 dotnet tool install --global Moonwell.Cli
 ```
 
-## Create and run a map
-
-Create a new map project from the `moonwell` template and launch it:
+## Create and run the template
 
 ```sh
 dotnet new moonwell -n MyMap
@@ -28,7 +24,7 @@ cd MyMap
 moonwell run
 ```
 
-## What the template contains
+## What's in the template?
 
 A new project has five C# files and a World Editor map folder (`map/`):
 
@@ -46,7 +42,7 @@ MyMap/
 
 ### `Map.cs`
 
-`Map.cs` declares the single class in the project that inherits `Map`. Its constructor sets the map's properties and adds the `GameComponent`s the game starts with:
+`Map.cs` declares the single class in the project that inherits `Map`. Its constructor sets the map settings and adds the `GameComponent`s the game starts with:
 
 ```csharp
 using Moonwell;
@@ -67,6 +63,8 @@ namespace MyMap
     }
 }
 ```
+
+There is no `Main` to write. The build writes one (`MapMain.g.cs`, see [CLI & Build](/reference/cli-and-build/#build-pipeline)) that starts the runtime with your `Map` class. The components in `Map.Components` are added to the game, and their `OnGameStart` is where your code starts.
 
 ### `Start.cs`
 
@@ -184,3 +182,4 @@ namespace MyMap
 - [Project & World Editor](/guides/project-and-editor/) — how `Map.cs`, `map/`, `assets/`, `ids.json`, and `build/` fit together, and how to place code-declared objects in World Editor.
 - [Objects](/guides/objects/) — declaring units, heroes, items, abilities, buffs, destructables, doodads, and upgrades in C#.
 - [Actors, Components & Reactions](/guides/components-and-reactions/) — writing components and reaction methods across units, items, destructables, players, and the game.
+- [Timers](/guides/abilities-buffs-and-timers/#timers) — `Timer.After` and `Timer.Every`, to run code later or every few seconds.

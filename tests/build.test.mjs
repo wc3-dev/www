@@ -3,37 +3,270 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
 
-const expectedPages = [
-  "dist/index.html",
-  "dist/guides/getting-started/index.html",
-  "dist/guides/project-and-editor/index.html",
-  "dist/guides/objects/index.html",
-  "dist/guides/components-and-reactions/index.html",
-  "dist/guides/abilities-buffs-and-timers/index.html",
-  "dist/guides/multiplayer/index.html",
-  "dist/reference/cli-and-build/index.html",
-  "dist/reference/runtime-api/index.html",
-  "dist/reference/objects-and-natives/index.html",
-  "dist/reference/diagnostics/index.html",
+const expectedDocsPages = [
+  "dist/docs/index.html",
+  "dist/docs/guides/getting-started/index.html",
+  "dist/docs/guides/project-and-editor/index.html",
+  "dist/docs/guides/objects/index.html",
+  "dist/docs/guides/components-and-reactions/index.html",
+  "dist/docs/guides/abilities-buffs-and-timers/index.html",
+  "dist/docs/guides/multiplayer/index.html",
+  "dist/docs/reference/cli-and-build/index.html",
+  "dist/docs/reference/runtime-api/index.html",
+  "dist/docs/reference/objects-and-natives/index.html",
+  "dist/docs/reference/diagnostics/index.html",
 ];
 
-test("astro build emits all 11 documentation pages, 404 page, pagefind bundle, and valid internal links", () => {
-  for (const page of expectedPages) {
-    assert.equal(existsSync(page), true, `${page} should exist`);
-  }
-  assert.equal(existsSync("dist/404.html"), true, "dist/404.html should exist");
+const expectedTutorialsPages = [
+  "dist/home/tutorials/index.html",
+  "dist/home/tutorials/editor-basics/install-and-open/index.html",
+  "dist/home/tutorials/editor-basics/editor-tour/index.html",
+  "dist/home/tutorials/editor-basics/create-your-map/index.html",
+  "dist/home/tutorials/terrain/painting-tiles/index.html",
+  "dist/home/tutorials/terrain/height-and-cliffs/index.html",
+  "dist/home/tutorials/terrain/water/index.html",
+  "dist/home/tutorials/terrain/finishing-touches/index.html",
+  "dist/home/tutorials/placement/doodads/index.html",
+  "dist/home/tutorials/placement/units-and-buildings/index.html",
+  "dist/home/tutorials/placement/creep-camps/index.html",
+  "dist/home/tutorials/placement/regions/index.html",
+  "dist/home/tutorials/map-setup/map-options/index.html",
+  "dist/home/tutorials/map-setup/players-and-forces/index.html",
+  "dist/home/tutorials/object-editor/object-editor-tour/index.html",
+  "dist/home/tutorials/object-editor/custom-hero/index.html",
+  "dist/home/tutorials/object-editor/custom-ability/index.html",
+  "dist/home/tutorials/object-editor/village-tower/index.html",
+  "dist/home/tutorials/triggers/trigger-basics/index.html",
+  "dist/home/tutorials/triggers/wave-timer/index.html",
+  "dist/home/tutorials/triggers/spawning-waves/index.html",
+  "dist/home/tutorials/triggers/win-and-lose/index.html",
+  "dist/home/tutorials/next/index.html",
+];
+
+test("home build emits standalone wc3.dev landing page, /moonwell page, and 404 page in dist/home without docs routes", () => {
+  assert.equal(existsSync("dist/home/index.html"), true, "dist/home/index.html should exist");
   assert.equal(
-    existsSync("dist/pagefind/pagefind.js"),
+    existsSync("dist/home/moonwell/index.html"),
     true,
-    "dist/pagefind/pagefind.js should exist",
+    "dist/home/moonwell/index.html should exist",
+  );
+  assert.equal(existsSync("dist/home/404.html"), true, "dist/home/404.html should exist");
+  assert.equal(existsSync("dist/home/mw.gif"), true, "dist/home/mw.gif should exist");
+  assert.equal(
+    existsSync("dist/home/wc3-dev-logo.svg"),
+    true,
+    "dist/home/wc3-dev-logo.svg should exist",
+  );
+  assert.equal(
+    existsSync("dist/home/mw-text-cropped.png"),
+    true,
+    "dist/home/mw-text-cropped.png should exist",
+  );
+  assert.equal(
+    existsSync("dist/home/guides"),
+    false,
+    "dist/home should not contain Starlight guides routes",
+  );
+  assert.equal(
+    existsSync("dist/home/reference"),
+    false,
+    "dist/home should not contain Starlight reference routes",
   );
 
-  const indexHtml = readFileSync("dist/index.html", "utf8");
+  const homeHtml = readFileSync("dist/home/index.html", "utf8");
+  assert.doesNotMatch(
+    homeHtml,
+    /id="starlight__sidebar"/,
+    "wc3.dev homepage should not render the Starlight docs sidebar",
+  );
+  assert.match(
+    homeHtml,
+    /href="https:\/\/wc3\.dev\/"\s+class="site-title[^"]*"[\s\S]*?src="\/wc3-dev-logo\.svg"/,
+    "top-left site title on wc3.dev should link to https://wc3.dev/ and render /wc3-dev-logo.svg",
+  );
+  assert.doesNotMatch(
+    homeHtml,
+    /src="\/(?:mw\.gif|reforged\.png)"/,
+    "wc3.dev hero should only render text and buttons without a hero image",
+  );
+  assert.match(
+    homeHtml,
+    /Warcraft III: Reforged Modding Portal/,
+    "wc3.dev command header should render the portal heading",
+  );
+  assert.match(
+    homeHtml,
+    /class="mw-dashboard"/,
+    "wc3.dev homepage should render the control center dashboard grid",
+  );
+  assert.match(
+    homeHtml,
+    /3\.0\.1/,
+    "wc3.dev dashboard should display Warcraft III 3.0.1 telemetry/patch info",
+  );
+  assert.match(
+    homeHtml,
+    /dotnet new install Moonwell\.Templates/,
+    "wc3.dev dashboard should render the CLI quickstart terminal commands",
+  );
+  assert.match(
+    homeHtml,
+    /War3Net/,
+    "wc3.dev dashboard should link to War3Net in the C# toolchain panel",
+  );
+  assert.match(
+    homeHtml,
+    /CSharp\.lua/,
+    "wc3.dev dashboard should link to CSharp.lua in the C# toolchain panel",
+  );
+  assert.match(
+    homeHtml,
+    /Hive Workshop/,
+    "wc3.dev dashboard should link to Hive Workshop in the modding tools panel",
+  );
+  assert.match(
+    homeHtml,
+    /Blizzard Entertainment/,
+    "wc3.dev footer should credit Blizzard Entertainment",
+  );
+
+  const homeCssFiles = readdirSync("dist/home/_astro").filter((file) => file.endsWith(".css"));
+  const homeCss = homeCssFiles
+    .map((file) => readFileSync(`dist/home/_astro/${file}`, "utf8"))
+    .join("\n");
+  assert.match(
+    homeCss,
+    /\.mw-dashboard-main\{[^}]*max-width:\s*none/i,
+    "wc3.dev control center should span the full width of the display (max-width: none)",
+  );
+  assert.doesNotMatch(
+    homeHtml,
+    /data-palette-select/,
+    "wc3.dev header should not render a theme selector",
+  );
+  assert.match(homeHtml, /class="lucide\b/, "wc3.dev homepage should render Lucide icons");
+  assert.match(homeHtml, /href="\/moonwell\/"/, "wc3.dev header should link to /moonwell/");
+  assert.match(homeHtml, /href="\/tutorials\/"/, "wc3.dev header should link to /tutorials/");
+  assert.match(homeHtml, /World Editor Tutorials/, "wc3.dev homepage should highlight Tutorials");
+  assert.match(homeHtml, /Defend the Village/, "wc3.dev homepage should describe the tutorial map");
+
+  const moonwellHtml = readFileSync("dist/home/moonwell/index.html", "utf8");
+  assert.doesNotMatch(
+    moonwellHtml,
+    /id="starlight__sidebar"/,
+    "wc3.dev/moonwell should not render the Starlight docs sidebar",
+  );
+  assert.match(
+    moonwellHtml,
+    /href="https:\/\/wc3\.dev\/"\s+class="site-title[^"]*"[\s\S]*?src="\/mw-text-cropped\.png"/,
+    "top-left site title on wc3.dev/moonwell should link to https://wc3.dev/ and render /mw-text-cropped.png",
+  );
+  assert.match(moonwellHtml, /src="\/mw\.gif"/, "wc3.dev/moonwell should render /mw.gif");
+  assert.match(moonwellHtml, /class="lucide\b/, "wc3.dev/moonwell should render Lucide icons");
+  assert.match(
+    moonwellHtml,
+    /All-in-one modding framework for Warcraft III: Reforged/,
+    "wc3.dev/moonwell should render the tagline",
+  );
+  assert.match(
+    moonwellHtml,
+    /Moonwell Documentation/,
+    "wc3.dev/moonwell should render the Moonwell Documentation section",
+  );
+
+  const docsLinkMatches = [...moonwellHtml.matchAll(/href="https:\/\/docs\.wc3\.dev(\/[^"#?]*)"/g)];
+  assert.equal(
+    docsLinkMatches.length >= 6,
+    true,
+    "wc3.dev/moonwell should link to docs.wc3.dev sections",
+  );
+  for (const match of docsLinkMatches) {
+    const pathname = match[1];
+    const targetPath = pathname.endsWith("/")
+      ? `dist/docs${pathname}index.html`
+      : `dist/docs${pathname}/index.html`;
+    assert.equal(
+      existsSync(targetPath),
+      true,
+      `docs.wc3.dev link ${pathname} on wc3.dev/moonwell should resolve to ${targetPath}`,
+    );
+  }
+});
+
+test("tutorials build emits Starlight tutorials track under dist/home/tutorials with custom directives and valid internal links", () => {
+  for (const page of expectedTutorialsPages) {
+    assert.equal(existsSync(page), true, `${page} should exist`);
+  }
+  assert.equal(
+    existsSync("dist/home/tutorials/pagefind/pagefind.js"),
+    true,
+    "dist/home/tutorials/pagefind/pagefind.js should exist",
+  );
+
+  const indexHtml = readFileSync("dist/home/tutorials/index.html", "utf8");
+  assert.match(indexHtml, /Defend the Village/);
+  assert.match(indexHtml, /id="starlight__sidebar"/);
+  assert.match(
+    indexHtml,
+    /href="https:\/\/wc3\.dev\/"\s+class="site-title[^"]*"[\s\S]*?src="\/wc3-dev-logo\.svg"/,
+    "top-left site title on tutorials should link to https://wc3.dev/ and render /wc3-dev-logo.svg",
+  );
+
+  const createMapHtml = readFileSync(
+    "dist/home/tutorials/editor-basics/create-your-map/index.html",
+    "utf8",
+  );
+  assert.match(createMapHtml, /class="mw-tutorial-summary"/);
+  assert.match(createMapHtml, /class="mw-tutorial-goals"/);
+  assert.match(createMapHtml, /class="mw-menu-path"/);
+  assert.match(createMapHtml, /class="mw-keys"/);
+  assert.match(createMapHtml, /class="mw-steps"/);
+  assert.match(createMapHtml, /class="starlight-aside starlight-aside--tip mw-checkpoint"/);
+
+  for (const page of expectedTutorialsPages) {
+    const html = readFileSync(page, "utf8");
+    assert.doesNotMatch(
+      html,
+      /:::steps|:::checkpoint|::shot\[|:kbd\[|:menu\[/,
+      `${page} should not leak raw tutorial directives`,
+    );
+    const hrefMatches = html.matchAll(/href="(\/[^"#?]*)"/g);
+    for (const match of hrefMatches) {
+      const href = match[1];
+      if (href.startsWith("/tutorials/_astro/") || href.startsWith("/tutorials/pagefind/")) {
+        continue;
+      }
+      const targetPath = href.endsWith("/")
+        ? `dist/home${href}index.html`
+        : existsSync(`dist/home${href}`)
+          ? `dist/home${href}`
+          : `dist/home${href}/index.html`;
+      assert.equal(
+        existsSync(targetPath),
+        true,
+        `internal link ${href} in ${page} should resolve to ${targetPath}`,
+      );
+    }
+  }
+});
+
+test("docs build emits all 11 documentation pages, 404 page, pagefind bundle, and valid internal links in dist/docs", () => {
+  for (const page of expectedDocsPages) {
+    assert.equal(existsSync(page), true, `${page} should exist`);
+  }
+  assert.equal(existsSync("dist/docs/404.html"), true, "dist/docs/404.html should exist");
+  assert.equal(
+    existsSync("dist/docs/pagefind/pagefind.js"),
+    true,
+    "dist/docs/pagefind/pagefind.js should exist",
+  );
+
+  const indexHtml = readFileSync("dist/docs/index.html", "utf8");
   assert.match(indexHtml, /Moonwell/);
   assert.match(
     indexHtml,
-    /class="site-title[^"]*"[\s\S]*?src="\/mw-text-cropped\.png"/,
-    "top-left site title should render /mw-text-cropped.png",
+    /href="https:\/\/wc3\.dev\/"\s+class="site-title[^"]*"[\s\S]*?src="\/mw-text-cropped\.png"/,
+    "top-left site title on docs should link to https://wc3.dev/ and render /mw-text-cropped.png",
   );
   assert.match(indexHtml, /\/guides\/getting-started\//);
   assert.match(
@@ -42,10 +275,13 @@ test("astro build emits all 11 documentation pages, 404 page, pagefind bundle, a
     "root docs page should render the full Mintlify-style sidebar layout",
   );
 
-  const gettingStartedHtml = readFileSync("dist/guides/getting-started/index.html", "utf8");
+  const gettingStartedHtml = readFileSync("dist/docs/guides/getting-started/index.html", "utf8");
   assert.match(gettingStartedHtml, /Moonwell\.Templates/);
 
-  const objectsNativesHtml = readFileSync("dist/reference/objects-and-natives/index.html", "utf8");
+  const objectsNativesHtml = readFileSync(
+    "dist/docs/reference/objects-and-natives/index.html",
+    "utf8",
+  );
   assert.doesNotMatch(
     objectsNativesHtml,
     /namespace Moonwell\.Natives/,
@@ -53,11 +289,11 @@ test("astro build emits all 11 documentation pages, 404 page, pagefind bundle, a
   );
   assert.match(objectsNativesHtml, /ObjectList(?:&lt;|&#x3C;)Buff/);
 
-  const cliBuildHtml = readFileSync("dist/reference/cli-and-build/index.html", "utf8");
+  const cliBuildHtml = readFileSync("dist/docs/reference/cli-and-build/index.html", "utf8");
   assert.match(cliBuildHtml, /ObjectRegistry\.g\.cs/);
   assert.match(cliBuildHtml, /Aasl/);
 
-  for (const page of expectedPages) {
+  for (const page of expectedDocsPages) {
     const html = readFileSync(page, "utf8");
     const hrefMatches = html.matchAll(/href="(\/[^"#?]*)"/g);
     for (const match of hrefMatches) {
@@ -66,10 +302,10 @@ test("astro build emits all 11 documentation pages, 404 page, pagefind bundle, a
         continue;
       }
       const targetPath = href.endsWith("/")
-        ? `dist${href}index.html`
-        : existsSync(`dist${href}`)
-          ? `dist${href}`
-          : `dist${href}/index.html`;
+        ? `dist/docs${href}index.html`
+        : existsSync(`dist/docs${href}`)
+          ? `dist/docs${href}`
+          : `dist/docs${href}/index.html`;
       assert.equal(
         existsSync(targetPath),
         true,
@@ -97,28 +333,31 @@ test("biome.json is configured and biome check passes cleanly", () => {
   });
 });
 
-test("site defaults to Kanagawa Wave and offers Vitesse Dark as a theme option", () => {
-  const guideHtml = readFileSync("dist/guides/getting-started/index.html", "utf8");
-  assert.match(
+test("site uses Kanagawa Wave as the sole theme without any theme switcher", () => {
+  const guideHtml = readFileSync("dist/docs/guides/getting-started/index.html", "utf8");
+  assert.doesNotMatch(
     guideHtml,
-    /data-palette-select[\s\S]*value="kanagawa-wave"[\s\S]*value="vitesse-dark"/,
-    "header should render a palette selector with Kanagawa Wave and Vitesse Dark options",
+    /data-palette-select|starlight-theme-select|vitesse-dark/i,
+    "docs pages should not render any theme or palette selector",
   );
   assert.match(
     guideHtml,
-    /<pre data-language="csharp">[\s\S]*--0:#DCD7BA[\s\S]*--1:#DBD7CAEE/i,
-    "code blocks should render dual syntax token colors for kanagawa-wave (--0) and vitesse-dark (--1)",
+    /<pre data-language="csharp">[\s\S]*--0:#DCD7BA/i,
+    "code blocks should render Kanagawa Wave syntax token colors",
   );
 
-  const astroAssets = readdirSync("dist/_astro");
+  const astroAssets = readdirSync("dist/docs/_astro");
   const cssContent = astroAssets
     .filter((file) => file.endsWith(".css"))
-    .map((file) => readFileSync(`dist/_astro/${file}`, "utf8"))
+    .map((file) => readFileSync(`dist/docs/_astro/${file}`, "utf8"))
     .join("\n");
   assert.match(cssContent, /#1f1f28/i, "built CSS should include Kanagawa Wave background #1f1f28");
   assert.match(cssContent, /#7e9cd8/i, "built CSS should include Kanagawa Wave primary #7e9cd8");
-  assert.match(cssContent, /#121212/i, "built CSS should include Vitesse Dark background #121212");
-  assert.match(cssContent, /#4d9375/i, "built CSS should include Vitesse Dark primary #4d9375");
+  assert.doesNotMatch(
+    cssContent,
+    /vitesse-dark|#4d9375/i,
+    "built CSS should not include Vitesse Dark theme rules",
+  );
   assert.match(
     cssContent,
     /backdrop-filter:\s*blur\(12px\)/i,
@@ -136,10 +375,14 @@ test("site defaults to Kanagawa Wave and offers Vitesse Dark as a theme option",
   );
   assert.match(
     cssContent,
-    /Pixelify Sans Variable/i,
-    "built CSS should configure Pixelify Sans for headings",
+    /Space Grotesk Variable/i,
+    "built CSS should configure Space Grotesk for headings",
   );
-  assert.match(cssContent, /Jersey 15/i, "built CSS should configure Jersey 15 for small headings");
+  assert.doesNotMatch(
+    cssContent,
+    /Pixelify Sans|Jersey 15/i,
+    "built CSS should not include pixel fonts",
+  );
   assert.match(
     cssContent,
     /IBM Plex Sans Variable/i,
@@ -152,12 +395,19 @@ test("site defaults to Kanagawa Wave and offers Vitesse Dark as a theme option",
   );
 });
 
-test("wrangler.jsonc configures static assets with 404-page handling for wc3-dev", () => {
-  const raw = readFileSync("wrangler.jsonc", "utf8");
-  const config = JSON.parse(raw);
-  assert.equal(config.name, "wc3-dev");
-  assert.equal(config.assets?.directory, "./dist");
-  assert.equal(config.assets?.not_found_handling, "404-page");
+test("wrangler.jsonc and wrangler.docs.jsonc configure static assets for wc3-dev and wc3-docs", () => {
+  const homeRaw = readFileSync("wrangler.jsonc", "utf8");
+  const homeConfig = JSON.parse(homeRaw);
+  assert.equal(homeConfig.name, "wc3-dev");
+  assert.equal(homeConfig.assets?.directory, "./dist/home");
+  assert.equal(homeConfig.assets?.not_found_handling, "404-page");
+
+  assert.equal(existsSync("wrangler.docs.jsonc"), true, "wrangler.docs.jsonc should exist");
+  const docsRaw = readFileSync("wrangler.docs.jsonc", "utf8");
+  const docsConfig = JSON.parse(docsRaw);
+  assert.equal(docsConfig.name, "wc3-docs");
+  assert.equal(docsConfig.assets?.directory, "./dist/docs");
+  assert.equal(docsConfig.assets?.not_found_handling, "404-page");
 });
 
 test("README.md is untouched in git", () => {
