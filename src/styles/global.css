@@ -1,0 +1,481 @@
+@layer base, starlight, theme, components, utilities;
+
+@import "@fontsource-variable/pixelify-sans";
+@import "@fontsource/jersey-15";
+@import "@fontsource-variable/ibm-plex-sans";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@astrojs/starlight-tailwind";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  --font-sans: "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Pixelify Sans Variable", "Pixelify Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-subheading:
+    "Jersey 15", "IBM Plex Sans Variable", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Default Kanagawa Wave accent scale (#7e9cd8 crystalBlue, #7fb4ca springBlue, #223249 waveBlue1) */
+  --color-accent-50: #eef4ff;
+  --color-accent-100: #d9e6ff;
+  --color-accent-200: #b8d0f8;
+  --color-accent-300: #7fb4ca;
+  --color-accent-400: #7e9cd8;
+  --color-accent-500: #7e9cd8;
+  --color-accent-600: #658594;
+  --color-accent-700: #2d4f67;
+  --color-accent-800: #223249;
+  --color-accent-900: #1b2738;
+  --color-accent-950: #16161d;
+
+  /* Default Kanagawa Wave sumiInk / fujiWhite neutral scale (#1f1f28 sumiInk3, #dcd7ba fujiWhite) */
+  --color-gray-50: #dcd7ba;
+  --color-gray-100: #d5cea3;
+  --color-gray-200: #c8c093;
+  --color-gray-300: #9cabca;
+  --color-gray-400: #727169;
+  --color-gray-500: #54546d;
+  --color-gray-600: #363646;
+  --color-gray-700: #2a2a37;
+  --color-gray-800: #1f1f28;
+  --color-gray-900: #1a1a22;
+  --color-gray-950: #16161d;
+}
+
+:root,
+::backdrop {
+  /* Mintlify-inspired layout dimensions & typography */
+  --sl-font: var(--font-sans);
+  --sl-font-mono: var(--font-mono);
+  --sl-nav-height: 3.5rem;
+  --sl-sidebar-width: 17.5rem;
+  --sl-content-width: 46rem;
+  --sl-text-h1: 2rem;
+  --sl-text-h2: 1.375rem;
+  --sl-text-h3: 1.125rem;
+
+  /* Theme tokens — default: Kanagawa Wave */
+  --mw-bg: #1f1f28;
+  --mw-bg-nav: rgba(31, 31, 40, 0.84);
+  --mw-surface: #16161d;
+  --mw-surface-hover: #2a2a37;
+  --mw-border: #2a2a37;
+  --mw-border-subtle: #2a2a37;
+  --mw-fg: #dcd7ba;
+  --mw-text: #c8c093;
+  --mw-muted: #9cabca;
+  --mw-accent: #7e9cd8;
+  --mw-accent-high: #7fb4ca;
+  --mw-accent-low: #223249;
+  --mw-sidebar-hover-bg: rgba(220, 215, 186, 0.05);
+  --mw-sidebar-active-bg: rgba(126, 156, 216, 0.14);
+
+  /* Kanagawa Wave core surfaces & foregrounds */
+  --sl-color-white: #dcd7ba;
+  --sl-color-gray-1: #dcd7ba;
+  --sl-color-gray-2: #c8c093;
+  --sl-color-gray-3: #9cabca;
+  --sl-color-gray-4: #363646;
+  --sl-color-gray-5: #2a2a37;
+  --sl-color-gray-6: #16161d;
+  --sl-color-black: #1f1f28;
+
+  /* Kanagawa Wave primary accent */
+  --sl-color-accent-low: #223249;
+  --sl-color-accent: #7e9cd8;
+  --sl-color-accent-high: #7fb4ca;
+
+  /* Kanagawa Wave semantic colors */
+  --sl-color-green-low: #2b3328;
+  --sl-color-green: #76946a;
+  --sl-color-green-high: #98bb6c;
+
+  --sl-color-blue-low: #223249;
+  --sl-color-blue: #7e9cd8;
+  --sl-color-blue-high: #7fb4ca;
+
+  --sl-color-orange-low: #49443c;
+  --sl-color-orange: #ffa066;
+  --sl-color-orange-high: #e6c384;
+
+  --sl-color-red-low: #43242b;
+  --sl-color-red: #c34043;
+  --sl-color-red-high: #ff5d62;
+
+  --sl-color-purple-low: #2a233d;
+  --sl-color-purple: #957fb8;
+  --sl-color-purple-high: #d27e99;
+
+  /* Starlight UI bindings */
+  --sl-color-text: var(--mw-text);
+  --sl-color-text-accent: var(--mw-accent-high);
+  --sl-color-text-invert: var(--mw-surface);
+  --sl-color-bg: var(--mw-bg);
+  --sl-color-bg-nav: var(--mw-bg-nav);
+  --sl-color-bg-sidebar: var(--mw-bg);
+  --sl-color-bg-inline-code: var(--mw-surface);
+  --sl-color-bg-accent: var(--mw-accent);
+  --sl-color-hairline-light: var(--mw-border);
+  --sl-color-hairline: var(--mw-border-subtle);
+  --sl-color-hairline-shade: var(--mw-border-subtle);
+  --sl-color-backdrop-overlay: rgba(22, 22, 29, 0.78);
+  --sl-shadow-sm: none;
+  --sl-shadow-md: none;
+  --sl-shadow-lg: none;
+}
+
+:root[data-palette="vitesse-dark"],
+:root[data-palette="vitesse-dark"] ::backdrop {
+  /* Theme tokens — option: Vitesse Dark */
+  --mw-bg: #121212;
+  --mw-bg-nav: rgba(18, 18, 18, 0.82);
+  --mw-surface: #181818;
+  --mw-surface-hover: #191919;
+  --mw-border: #222222;
+  --mw-border-subtle: #191919;
+  --mw-fg: #dbd7ca;
+  --mw-text: #bfbaaa;
+  --mw-muted: #959da5;
+  --mw-accent: #4d9375;
+  --mw-accent-high: #80a665;
+  --mw-accent-low: #144620;
+  --mw-sidebar-hover-bg: rgba(255, 255, 255, 0.03);
+  --mw-sidebar-active-bg: rgba(77, 147, 117, 0.14);
+
+  /* Vitesse Dark core surfaces & foregrounds */
+  --sl-color-white: #dbd7ca;
+  --sl-color-gray-1: #dbd7ca;
+  --sl-color-gray-2: #bfbaaa;
+  --sl-color-gray-3: #959da5;
+  --sl-color-gray-4: #2f363d;
+  --sl-color-gray-5: #191919;
+  --sl-color-gray-6: #181818;
+  --sl-color-black: #121212;
+
+  /* Vitesse Dark primary accent */
+  --sl-color-accent-low: #144620;
+  --sl-color-accent: #4d9375;
+  --sl-color-accent-high: #80a665;
+
+  /* Vitesse Dark semantic colors */
+  --sl-color-green-low: #144620;
+  --sl-color-green: #4d9375;
+  --sl-color-green-high: #80a665;
+
+  --sl-color-blue-low: #05264c;
+  --sl-color-blue: #6394bf;
+  --sl-color-blue-high: #5eaab5;
+
+  --sl-color-orange-low: #49443c;
+  --sl-color-orange: #d4976c;
+  --sl-color-orange-high: #e6cc77;
+
+  --sl-color-red-low: #43242b;
+  --sl-color-red: #cb7676;
+  --sl-color-red-high: #fdaeb7;
+
+  --sl-color-purple-low: #29134e;
+  --sl-color-purple: #6872ab;
+  --sl-color-purple-high: #d9739f;
+
+  --sl-color-backdrop-overlay: rgba(18, 18, 18, 0.78);
+}
+
+@layer components {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--mw-bg);
+    color: var(--mw-text);
+  }
+
+  /* Mintlify sticky blurred top navbar */
+  header.header {
+    background-color: var(--mw-bg-nav);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--mw-border-subtle);
+  }
+
+  .site-title {
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--mw-fg);
+    text-decoration: none;
+  }
+
+  .site-title img {
+    height: 2.25rem;
+    width: auto;
+    display: block;
+    image-rendering: pixelated;
+  }
+
+  /* Mintlify pill search trigger */
+  site-search button[data-open-modal] {
+    border-radius: 9999px;
+    background-color: var(--mw-surface);
+    border: 1px solid var(--mw-border);
+    height: 2.25rem;
+    padding-inline: 0.875rem;
+    color: var(--mw-muted);
+    font-size: 0.8125rem;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+
+  site-search button[data-open-modal]:hover {
+    border-color: var(--mw-accent);
+    background-color: var(--mw-surface-hover);
+    color: var(--mw-fg);
+  }
+
+  site-search button[data-open-modal] kbd {
+    border-radius: 9999px;
+    background-color: var(--mw-bg);
+    border: 1px solid var(--mw-border);
+    font-size: 0.6875rem;
+    padding-inline: 0.45rem;
+    color: var(--mw-muted);
+  }
+
+  /* Palette switcher pill in navbar */
+  .mw-palette-picker {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .mw-palette-picker select {
+    border-radius: 9999px;
+    background-color: var(--mw-surface);
+    border: 1px solid var(--mw-border);
+    height: 2rem;
+    padding-inline: 0.75rem;
+    color: var(--mw-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .mw-palette-picker select:hover,
+  .mw-palette-picker select:focus-visible {
+    border-color: var(--mw-accent);
+    background-color: var(--mw-surface-hover);
+    color: var(--mw-fg);
+  }
+
+  .mw-palette-picker select option {
+    background-color: var(--mw-surface);
+    color: var(--mw-fg);
+  }
+
+  /* Mintlify right-hand Table of Contents ("On this page") */
+  .right-sidebar {
+    border-inline-start: none;
+  }
+
+  starlight-toc h2 {
+    font-family: var(--font-subheading);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mw-fg);
+    margin-bottom: 0.5rem;
+  }
+
+  starlight-toc nav ul {
+    border-inline-start: 1px solid var(--mw-border-subtle);
+  }
+
+  starlight-toc a {
+    font-size: 0.8125rem;
+    color: var(--mw-muted);
+    padding-block: 0.25rem;
+    padding-inline-start: 0.875rem;
+    border-inline-start: 1px solid transparent;
+    margin-inline-start: -1px;
+    border-radius: 0;
+    transition:
+      color 150ms ease,
+      border-color 150ms ease;
+  }
+
+  starlight-toc a:hover {
+    color: var(--mw-fg);
+  }
+
+  starlight-toc a[aria-current="true"],
+  starlight-toc a[aria-current="true"]:hover {
+    color: var(--mw-accent-high);
+    font-weight: 500;
+    background: transparent;
+    border-inline-start-color: var(--mw-accent);
+  }
+
+  /* Main content & headings */
+  main .content-panel {
+    border-top: none;
+  }
+
+  main .content-panel:first-of-type {
+    padding-bottom: 0.5rem;
+  }
+
+  .sl-markdown-content h1,
+  .content-panel h1 {
+    font-family: var(--font-heading);
+    letter-spacing: 0.01em;
+    font-weight: 700;
+    color: var(--mw-fg);
+  }
+
+  .sl-markdown-content h2,
+  .sl-markdown-content h3 {
+    font-family: var(--font-heading);
+    letter-spacing: 0.01em;
+    font-weight: 600;
+    color: var(--mw-fg);
+  }
+
+  .sl-markdown-content h4,
+  .sl-markdown-content h5,
+  .sl-markdown-content h6 {
+    font-family: var(--font-subheading);
+    letter-spacing: 0.01em;
+    font-weight: 400;
+    color: var(--mw-fg);
+  }
+
+  .sl-markdown-content :not(pre) > code {
+    background-color: var(--mw-surface);
+    border: 1px solid var(--mw-border);
+    border-radius: 0.375rem;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.85em;
+    color: var(--mw-fg);
+  }
+
+  /* Mintlify-style interactive link cards & card grids */
+  .card,
+  .sl-link-card {
+    background-color: var(--mw-surface);
+    border: 1px solid var(--mw-border);
+    border-radius: 1rem;
+    padding: 1.25rem 1.5rem;
+    box-shadow: none;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .sl-link-card:hover {
+    border-color: var(--mw-accent);
+    background-color: var(--mw-surface-hover);
+  }
+
+  .sl-link-card .title {
+    font-family: var(--font-subheading);
+    font-size: 1.1875rem;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    color: var(--mw-fg);
+  }
+
+  .sl-link-card .description {
+    font-size: 0.875rem;
+    color: var(--mw-muted);
+  }
+
+  /* Callouts & pagination */
+  .starlight-aside {
+    border-radius: 0.75rem;
+    border: 1px solid var(--mw-border);
+    border-inline-start-width: 1px;
+    background-color: var(--mw-surface);
+  }
+
+  .starlight-aside__title {
+    font-family: var(--font-subheading);
+    font-size: 1.125rem;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  .pagination-links a {
+    border-radius: 0.75rem;
+    border: 1px solid var(--mw-border);
+    background-color: var(--mw-surface);
+    box-shadow: none;
+    padding: 0.875rem 1.25rem;
+    transition: border-color 150ms ease;
+  }
+
+  .pagination-links a:hover {
+    border-color: var(--mw-accent);
+  }
+
+  /* Mintlify left sidebar navigation */
+  .sidebar-pane {
+    border-inline-end: 1px solid var(--mw-border-subtle);
+    background-color: var(--mw-bg);
+  }
+
+  #starlight__sidebar .top-level > li + li {
+    margin-top: 1.25rem;
+  }
+
+  #starlight__sidebar summary {
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 0.375rem;
+  }
+
+  #starlight__sidebar .group-label .large {
+    font-family: var(--font-subheading);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mw-fg);
+  }
+
+  #starlight__sidebar ul ul {
+    border-inline-start: none;
+    padding-inline-start: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  #starlight__sidebar a {
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--mw-muted);
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  #starlight__sidebar a:hover {
+    color: var(--mw-fg);
+    background-color: var(--mw-sidebar-hover-bg);
+  }
+
+  #starlight__sidebar a[aria-current="page"],
+  #starlight__sidebar a[aria-current="page"]:hover {
+    background-color: var(--mw-sidebar-active-bg);
+    color: var(--mw-accent-high);
+    font-weight: 500;
+  }
+}
