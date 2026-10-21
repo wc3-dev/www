@@ -2,6 +2,11 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
+import {
+  getPatchVersions,
+  sortPatchVersions,
+  transformPatchNotesMarkdown,
+} from "../src/patch-notes/versions.mjs";
 
 const expectedDocsPages = [
   "dist/docs/index.html",
@@ -139,6 +144,16 @@ test("home build emits standalone wc3.dev landing page, /moonwell page, and 404 
     /\.mw-dashboard-main\{[^}]*max-width:\s*none/i,
     "wc3.dev control center should span the full width of the display (max-width: none)",
   );
+  assert.match(
+    homeCss,
+    /box-sizing:\s*border-box/i,
+    "wc3.dev homepage should use border-box sizing to prevent horizontal overflow",
+  );
+  assert.match(
+    homeCss,
+    /100dvh/i,
+    "wc3.dev control center should lock to 100dvh as a one-page app on desktop viewports",
+  );
   assert.doesNotMatch(
     homeHtml,
     /data-palette-select/,
@@ -147,6 +162,7 @@ test("home build emits standalone wc3.dev landing page, /moonwell page, and 404 
   assert.match(homeHtml, /class="lucide\b/, "wc3.dev homepage should render Lucide icons");
   assert.match(homeHtml, /href="\/moonwell\/"/, "wc3.dev header should link to /moonwell/");
   assert.match(homeHtml, /href="\/tutorials\/"/, "wc3.dev header should link to /tutorials/");
+  assert.match(homeHtml, /href="\/patch-notes\/"/, "wc3.dev should link to /patch-notes/");
   assert.match(homeHtml, /World Editor Tutorials/, "wc3.dev homepage should highlight Tutorials");
   assert.match(homeHtml, /Defend the Village/, "wc3.dev homepage should describe the tutorial map");
 
@@ -248,6 +264,112 @@ test("tutorials build emits Starlight tutorials track under dist/home/tutorials 
       );
     }
   }
+});
+
+test("patch-notes build renders latest patch at /patch-notes/ without an overview page and orders versions descending", () => {
+  const expectedPatchNotesPages = [
+    "dist/home/patch-notes/index.html",
+    "dist/home/patch-notes/3.0.0/index.html",
+    "dist/home/patch-notes/2.0.4/index.html",
+    "dist/home/patch-notes/2.0.3/index.html",
+  ];
+  for (const page of expectedPatchNotesPages) {
+    assert.equal(existsSync(page), true, `${page} should exist`);
+  }
+  assert.equal(
+    existsSync("dist/home/patch-notes/pagefind/pagefind.js"),
+    true,
+    "dist/home/patch-notes/pagefind/pagefind.js should exist",
+  );
+
+  const indexHtml = readFileSync("dist/home/patch-notes/index.html", "utf8");
+  assert.match(indexHtml, /id="starlight__sidebar"/);
+  assert.match(
+    indexHtml,
+    /href="https:\/\/wc3\.dev\/"\s+class="site-title[^"]*"[\s\S]*?src="\/wc3-dev-logo\.svg"/,
+    "top-left site title on patch-notes should link to https://wc3.dev/ and render /wc3-dev-logo.svg",
+  );
+  assert.doesNotMatch(
+    indexHtml,
+    /All Patch Notes/,
+    "/patch-notes/ should not render a separate overview item in the sidebar",
+  );
+  assert.match(
+    indexHtml,
+    /BlzUnitHeal/,
+    "/patch-notes/ root page should render the latest patch (3.0.1) directly",
+  );
+  assert.match(
+    indexHtml,
+    /Silverpine Sprint/,
+    "/patch-notes/ root page should render Patch 3.0.1 content",
+  );
+  const pos301 = indexHtml.indexOf("Patch 3.0.1");
+  const pos300 = indexHtml.indexOf("Patch 3.0.0");
+  assert.equal(
+    pos301 !== -1 && pos300 !== -1 && pos301 < pos300,
+    true,
+    "Patch 3.0.1 should appear before Patch 3.0.0",
+  );
+
+  const patch300Html = readFileSync("dist/home/patch-notes/3.0.0/index.html", "utf8");
+  assert.match(patch300Html, /Forsaken Paladin/);
+  assert.match(
+    patch300Html,
+    /<li>Added new UI Theme - Forsaken Kingdom<\/li>/,
+    "3.0.0 patch notes should render tight list items without loose <p> wrappers caused by indented headings",
+  );
+
+  const patch203Html = readFileSync("dist/home/patch-notes/2.0.3/index.html", "utf8");
+  assert.match(
+    patch203Html,
+    /class="mw-patch-badge mw-patch-buff"[\s\S]*?lucide-circle-arrow-up/,
+    "2.0.3 patch notes should render Lucide buff icons",
+  );
+  assert.match(
+    patch203Html,
+    /class="mw-patch-badge mw-patch-nerf"[\s\S]*?lucide-circle-arrow-down/,
+    "2.0.3 patch notes should render Lucide nerf icons",
+  );
+  assert.match(
+    patch203Html,
+    /class="mw-patch-badge mw-patch-neutral"[\s\S]*?lucide-circle-minus/,
+    "2.0.3 patch notes should render Lucide neutral/adjustment icons",
+  );
+  assert.doesNotMatch(
+    patch203Html,
+    /AAAEm0lEQVR4|AAADX9CSS|AAAE4klEQVR4/,
+    "2.0.3 patch notes should replace Liquipedia buff/nerf/neutral base64 PNGs with Lucide SVGs",
+  );
+  assert.match(
+    patch203Html,
+    /<li>Added a countdown timer to the UI for construction and training<\/li>/,
+    "2.0.3 patch notes should render tight list items after normalizing indented headings",
+  );
+
+  const sampleMd =
+    "- :buff: Archer\n- :nerf: Wisp\n- :neutral: Ward\n\n  ## **General**\n\n  ### **Human**\n\n-\n";
+  const transformed = transformPatchNotesMarkdown(sampleMd);
+  assert.match(transformed, /mw-patch-buff/);
+  assert.match(transformed, /mw-patch-nerf/);
+  assert.match(transformed, /mw-patch-neutral/);
+  assert.match(transformed, /^## \*\*General\*\*$/m);
+  assert.match(transformed, /^### \*\*Human\*\*$/m);
+  assert.doesNotMatch(transformed, /^-\s*$/m);
+
+  assert.deepEqual(
+    sortPatchVersions(["2.0.3", "3.0.1", "3.0.10", "3.0.0", "2.0.4"]),
+    ["3.0.10", "3.0.1", "3.0.0", "2.0.4", "2.0.3"],
+    "sortPatchVersions should order versions newest-first using numeric segment comparison",
+  );
+  const versions = getPatchVersions();
+  assert.equal(versions[0], "3.0.1");
+  const homeHtml = readFileSync("dist/home/index.html", "utf8");
+  assert.match(
+    homeHtml,
+    new RegExp(`WC3 ${versions[0].replace(/\./g, "\\.")}`),
+    "homepage should dynamically render the latest patch version from src/patch-notes/content/docs",
+  );
 });
 
 test("docs build emits all 11 documentation pages, 404 page, pagefind bundle, and valid internal links in dist/docs", () => {
