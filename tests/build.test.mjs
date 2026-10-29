@@ -101,8 +101,40 @@ test("home build emits standalone wc3.dev landing page, /moonwell page, and 404 
   );
   assert.match(
     homeHtml,
+    /class="mw-cmd-bar"/,
+    "wc3.dev homepage should render the compact portal header bar",
+  );
+  assert.match(
+    homeHtml,
     /class="mw-dashboard"/,
     "wc3.dev homepage should render the control center dashboard grid",
+  );
+  for (const cardId of ["moonwell", "quickstart", "tutorials", "engine", "toolchain", "tools"]) {
+    assert.match(
+      homeHtml,
+      new RegExp(`data-card="${cardId}"`),
+      `wc3.dev dashboard should render the ${cardId} panel`,
+    );
+  }
+  assert.match(
+    homeHtml,
+    /class="mw-module-grid"/,
+    "wc3.dev Moonwell card should render the 2x3 module icon grid",
+  );
+  assert.match(
+    homeHtml,
+    /class="mw-terminal-window"/,
+    "wc3.dev CLI Quickstart card should render the terminal window",
+  );
+  assert.match(
+    homeHtml,
+    /class="mw-chapter-grid"/,
+    "wc3.dev Tutorials card should render the 01-06 chapter grid",
+  );
+  assert.doesNotMatch(
+    homeHtml,
+    /data-testid="topic-search"/,
+    "wc3.dev dashboard should not render a tag-search input widget",
   );
   assert.match(
     homeHtml,
@@ -154,6 +186,23 @@ test("home build emits standalone wc3.dev landing page, /moonwell page, and 404 
     /100dvh/i,
     "wc3.dev control center should lock to 100dvh as a one-page app on desktop viewports",
   );
+  const usedMwClasses = new Set();
+  const notFoundHtml = readFileSync("dist/home/404.html", "utf8");
+  const moonwellPageHtml = readFileSync("dist/home/moonwell/index.html", "utf8");
+  for (const pageHtml of [homeHtml, moonwellPageHtml, notFoundHtml]) {
+    for (const match of pageHtml.matchAll(/class="([^"]+)"/g)) {
+      for (const cls of match[1].split(/\s+/)) {
+        if (cls.startsWith("mw-")) usedMwClasses.add(cls);
+      }
+    }
+  }
+  for (const cls of usedMwClasses) {
+    assert.match(
+      homeCss,
+      new RegExp(`\\.${cls}\\b`),
+      `dist/home CSS should define styles for .${cls}`,
+    );
+  }
   assert.doesNotMatch(
     homeHtml,
     /data-palette-select/,
@@ -497,19 +546,15 @@ test("site uses Kanagawa Wave as the sole theme without any theme switcher", () 
   );
   assert.match(
     cssContent,
-    /Space Grotesk Variable/i,
-    "built CSS should configure Space Grotesk for headings",
+    /Nunito Variable/i,
+    "built CSS should configure Nunito Variable for headings",
   );
   assert.doesNotMatch(
     cssContent,
-    /Pixelify Sans|Jersey 15/i,
-    "built CSS should not include pixel fonts",
+    /Space Grotesk Variable|Outfit Variable|Pixelify Sans|Jersey 15/i,
+    "built CSS should not include Space Grotesk, Outfit, or pixel fonts",
   );
-  assert.match(
-    cssContent,
-    /IBM Plex Sans Variable/i,
-    "built CSS should configure IBM Plex Sans for body text",
-  );
+  assert.match(cssContent, /Google Sans/i, "built CSS should configure Google Sans for body text");
   assert.match(
     cssContent,
     /JetBrains Mono Variable/i,

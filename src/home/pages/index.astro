@@ -1,20 +1,17 @@
 ---
 import {
+  ArrowRight,
   ArrowUpRight,
   BookOpen,
   Boxes,
-  CodeXml,
   Compass,
   Copy,
-  Cpu,
   FolderOpen,
-  GitBranch,
   Rocket,
   Sparkles,
   Terminal,
   Users,
   Workflow,
-  Wrench,
 } from "@lucide/astro";
 import { getPatchVersions } from "../../patch-notes/versions.mjs";
 import HomeLayout from "../components/HomeLayout.astro";
@@ -106,13 +103,9 @@ const tutorialChapters = [
   <main id="main-content" class="mw-home-main mw-dashboard-main">
     <section class="mw-cmd-bar" aria-label="Control Center Header">
       <div class="mw-cmd-identity">
-        <div class="mw-cmd-eyebrow">
-          <span class="mw-status-dot" aria-hidden="true"></span>
-          <span>WC3.DEV · MODDING CONTROL CENTER</span>
-        </div>
         <h1 class="mw-cmd-title">Warcraft III: Reforged Modding Portal</h1>
         <p class="mw-cmd-subtitle">
-          wc3.dev — Warcraft III: Reforged Modding &amp; Tutorials
+          C# map framework, World Editor tutorials, patch notes &amp; engine reference
         </p>
       </div>
       <div class="mw-cmd-telemetry" aria-label="Ecosystem Telemetry">
@@ -135,24 +128,32 @@ const tutorialChapters = [
     <div class="mw-dashboard">
       <section
         class="mw-panel mw-panel-moonwell"
+        data-card="moonwell"
         aria-labelledby="panel-moonwell-title"
       >
-        <div class="mw-panel-bar">
-          <span class="mw-panel-tag">
-            <CodeXml size={14} aria-hidden="true" />
-            <span>C# Framework &amp; Toolchain</span>
-          </span>
-          <span class="mw-panel-meta">NuGet · MIT</span>
-        </div>
-        <div class="mw-panel-head">
+        <header class="mw-card-head">
           <h2 id="panel-moonwell-title" class="mw-panel-title">Moonwell</h2>
-          <p class="mw-panel-desc">
-            Build Warcraft III maps in C#. Declare units, heroes, items,
-            abilities, buffs, and upgrades in code, attach components and
-            reactions to game events, and pack a playable <code>.w3x</code> with
-            <code>moonwell build</code>.
-          </p>
-        </div>
+          <div class="mw-card-corner">
+            <a href="/moonwell/" class="mw-btn mw-btn-secondary">
+              <span>Explore</span>
+            </a>
+            <a href="https://docs.wc3.dev/" class="mw-btn mw-btn-secondary">
+              <span>Docs</span>
+            </a>
+            <a
+              href="https://docs.wc3.dev/guides/getting-started/"
+              class="mw-btn mw-btn-primary"
+            >
+              <span>Get Started</span>
+              <ArrowRight size={13} aria-hidden="true" />
+            </a>
+          </div>
+          <small class="mw-card-subtitle">
+            C# framework &amp; toolchain · Declare units, abilities, buffs, and items in code and
+            pack a playable <code>.w3x</code> with <code>moonwell build</code>
+          </small>
+        </header>
+
         <div class="mw-module-grid">
           {
             moonwellModules.map((mod) => {
@@ -169,53 +170,38 @@ const tutorialChapters = [
             })
           }
         </div>
-        <div class="mw-panel-actions">
-          <a
-            href="https://docs.wc3.dev/guides/getting-started/"
-            class="mw-btn mw-btn-primary"
-          >
-            <Rocket size={15} aria-hidden="true" />
-            <span>Get Started</span>
-          </a>
-          <a href="/moonwell/" class="mw-btn mw-btn-secondary">
-            <CodeXml size={15} aria-hidden="true" />
-            <span>Explore Moonwell</span>
-          </a>
-          <a href="https://docs.wc3.dev/" class="mw-btn mw-btn-secondary">
-            <BookOpen size={15} aria-hidden="true" />
-            <span>Documentation</span>
-          </a>
-        </div>
       </section>
 
       <section
         class="mw-panel mw-panel-terminal"
+        data-card="quickstart"
         aria-labelledby="panel-cli-title"
       >
-        <div class="mw-panel-bar">
-          <span class="mw-panel-tag">
-            <Terminal size={14} aria-hidden="true" />
-            <span>CLI Quickstart</span>
-          </span>
-          <button
-            type="button"
-            class="mw-copy-btn"
-            data-copy-cli
-            aria-label="Copy CLI quickstart commands"
-          >
-            <Copy size={13} aria-hidden="true" />
-            <span data-copy-label>Copy</span>
-          </button>
-        </div>
-        <div class="mw-panel-head">
-          <h2 id="panel-cli-title" class="mw-panel-title">
-            Scaffold &amp; Build
-          </h2>
-          <p class="mw-panel-desc">
-            Install the CLI and template from NuGet to generate a map project
-            and compile C# + object declarations into a playable map.
-          </p>
-        </div>
+        <header class="mw-card-head">
+          <h2 id="panel-cli-title" class="mw-panel-title">CLI Quickstart</h2>
+          <div class="mw-card-corner">
+            <button
+              type="button"
+              class="mw-btn mw-btn-secondary"
+              data-copy-cli
+              aria-label="Copy CLI quickstart commands"
+            >
+              <Copy size={12} aria-hidden="true" />
+              <span data-copy-label>Copy</span>
+            </button>
+            <a
+              href="https://docs.wc3.dev/reference/cli-and-build/"
+              class="mw-btn mw-btn-secondary"
+            >
+              <span>CLI &amp; Build</span>
+              <ArrowRight size={13} aria-hidden="true" />
+            </a>
+          </div>
+          <small class="mw-card-subtitle">
+            Install the CLI and template from NuGet to scaffold and compile a map project
+          </small>
+        </header>
+
         <div class="mw-terminal-window">
           <div class="mw-terminal-header" aria-hidden="true">
             <span class="mw-term-dot mw-term-dot-red"></span>
@@ -232,19 +218,20 @@ const tutorialChapters = [
 <span class="mw-term-prompt">$</span> dotnet new moonwell -n MyMap
 <span class="mw-term-prompt">$</span> cd MyMap &amp;&amp; moonwell build</code></pre>
         </div>
+
         <div class="mw-panel-links-inline">
           <a
             href="https://docs.wc3.dev/reference/cli-and-build/"
             class="mw-inline-link"
           >
-            <Terminal size={14} aria-hidden="true" />
-            <span>CLI &amp; Build Pipeline</span>
+            <Terminal size={13} aria-hidden="true" />
+            <span>Build Pipeline</span>
           </a>
           <a
             href="https://docs.wc3.dev/guides/project-and-editor/"
             class="mw-inline-link"
           >
-            <FolderOpen size={14} aria-hidden="true" />
+            <FolderOpen size={13} aria-hidden="true" />
             <span>World Editor Sync</span>
           </a>
         </div>
@@ -252,26 +239,31 @@ const tutorialChapters = [
 
       <section
         class="mw-panel mw-panel-tutorials"
+        data-card="tutorials"
         aria-labelledby="panel-tutorials-title"
       >
-        <div class="mw-panel-bar">
-          <span class="mw-panel-tag">
-            <Compass size={14} aria-hidden="true" />
-            <span>Beginner Track · 21 Lessons</span>
-          </span>
-          <span class="mw-panel-meta">6 Chapters</span>
-        </div>
-        <div class="mw-panel-head">
+        <header class="mw-card-head">
           <h2 id="panel-tutorials-title" class="mw-panel-title">
             World Editor Tutorials
           </h2>
-          <p class="mw-panel-desc">
-            New to Warcraft III map-making? Build a complete custom map,
-            <strong>Defend the Village</strong>, from an empty grass field to a
-            playable five-wave defense game using the World Editor — no
-            programming required.
-          </p>
-        </div>
+          <div class="mw-card-corner">
+            <a href="/tutorials/" class="mw-btn mw-btn-secondary">
+              <span>All Chapters</span>
+            </a>
+            <a
+              href="/tutorials/editor-basics/install-and-open/"
+              class="mw-btn mw-btn-primary"
+            >
+              <Compass size={13} aria-hidden="true" />
+              <span>Start Lesson 1</span>
+            </a>
+          </div>
+          <small class="mw-card-subtitle">
+            Build <strong>Defend the Village</strong> across 6 chapters and 21 step-by-step lessons
+            — no programming required
+          </small>
+        </header>
+
         <div class="mw-chapter-grid">
           {
             tutorialChapters.map((ch) => (
@@ -285,84 +277,95 @@ const tutorialChapters = [
             ))
           }
         </div>
-        <div class="mw-panel-actions">
-          <a
-            href="/tutorials/editor-basics/install-and-open/"
-            class="mw-btn mw-btn-primary"
-          >
-            <Compass size={15} aria-hidden="true" />
-            <span>Start Lesson 1</span>
-          </a>
-          <a href="/tutorials/" class="mw-btn mw-btn-secondary">
-            <BookOpen size={15} aria-hidden="true" />
-            <span>All Chapters</span>
-          </a>
-        </div>
       </section>
 
       <div class="mw-panel-stack">
         <section
           class="mw-panel mw-panel-compact"
+          data-card="engine"
           aria-labelledby="panel-engine-title"
         >
-          <div class="mw-panel-bar">
-            <span class="mw-panel-tag">
-              <Cpu size={14} aria-hidden="true" />
-              <span>Patch Notes &amp; Engine Reference</span>
-            </span>
-            <a href="/patch-notes/" class="mw-panel-meta">WC3 {latestPatch}</a>
-          </div>
-          <h2 id="panel-engine-title" class="mw-panel-subtitle">
-            Engine, Natives &amp; Diagnostics
-          </h2>
+          <header class="mw-card-head">
+            <h2 id="panel-engine-title" class="mw-panel-subtitle">
+              Engine &amp; Patch Notes
+            </h2>
+            <div class="mw-card-corner">
+              <a href="/patch-notes/" class="mw-btn mw-btn-secondary">
+                <span>WC3 {latestPatch}</span>
+                <ArrowRight size={12} aria-hidden="true" />
+              </a>
+            </div>
+            <small class="mw-card-subtitle">
+              Version history, natives &amp; compiler checks
+            </small>
+          </header>
           <div class="mw-resource-list">
             <a href="/patch-notes/" class="mw-resource-row">
-              <span class="mw-resource-name">Warcraft III Patch Notes</span>
-              <span class="mw-resource-detail">Patch {recentPatchesLabel} &amp; version history</span>
+              <span class="mw-resource-name">
+                <span>Warcraft III Patch Notes</span>
+                <span class="mw-row-tag mw-row-tag-green">Latest</span>
+              </span>
+              <span class="mw-resource-detail">
+                Patch {recentPatchesLabel} &amp; balance history
+              </span>
             </a>
             <a
               href="https://docs.wc3.dev/reference/objects-and-natives/"
               class="mw-resource-row"
             >
-              <span class="mw-resource-name">Objects, Handles &amp; Natives</span>
-              <span class="mw-resource-detail">FourCCs, standard catalog &amp; handle types</span>
+              <span class="mw-resource-name">
+                <span>Objects, Handles &amp; Natives</span>
+                <span class="mw-row-tag mw-row-tag-gold">API</span>
+              </span>
+              <span class="mw-resource-detail">
+                FourCCs, standard catalog &amp; handle types
+              </span>
             </a>
             <a
               href="https://docs.wc3.dev/reference/diagnostics/"
               class="mw-resource-row"
             >
-              <span class="mw-resource-name">Compiler &amp; Build Diagnostics</span>
-              <span class="mw-resource-detail">Desync &amp; World Editor limit analyzers</span>
+              <span class="mw-resource-name">
+                <span>Compiler &amp; Build Diagnostics</span>
+                <span class="mw-row-tag mw-row-tag-blue">Roslyn</span>
+              </span>
+              <span class="mw-resource-detail">
+                Desync &amp; World Editor limit analyzers
+              </span>
             </a>
           </div>
         </section>
 
         <section
           class="mw-panel mw-panel-compact"
+          data-card="toolchain"
           aria-labelledby="panel-toolchain-title"
         >
-          <div class="mw-panel-bar">
-            <span class="mw-panel-tag">
-              <GitBranch size={14} aria-hidden="true" />
-              <span>C# Toolchain &amp; Upstream</span>
-            </span>
-            <span class="mw-panel-meta">Open Source</span>
-          </div>
-          <h2 id="panel-toolchain-title" class="mw-panel-subtitle">
-            Repositories &amp; Packages
-          </h2>
+          <header class="mw-card-head">
+            <h2 id="panel-toolchain-title" class="mw-panel-subtitle">
+              Repositories &amp; Packages
+            </h2>
+            <div class="mw-card-corner">
+              <span class="mw-panel-meta">Open Source</span>
+            </div>
+            <small class="mw-card-subtitle">
+              C# framework, map formats &amp; Lua transpiler
+            </small>
+          </header>
           <div class="mw-resource-list">
             <a
-              href="https://github.com/mdlsvensson/moonwell"
+              href="https://github.com/wc3-dev/moonwell"
               class="mw-resource-row"
               target="_blank"
               rel="noopener noreferrer"
             >
               <span class="mw-resource-name">
-                <span>mdlsvensson/moonwell</span>
+                <span>wc3-dev/moonwell</span>
                 <ArrowUpRight size={13} aria-hidden="true" />
               </span>
-              <span class="mw-resource-detail">Framework, CLI, source generators &amp; runtime</span>
+              <span class="mw-resource-detail">
+                Framework, CLI, source generators &amp; runtime
+              </span>
             </a>
             <a
               href="https://github.com/Drake53/War3Net"
@@ -374,7 +377,9 @@ const tutorialChapters = [
                 <span>War3Net</span>
                 <ArrowUpRight size={13} aria-hidden="true" />
               </span>
-              <span class="mw-resource-detail">MPQ archives, SLK tables &amp; .w3x map formats</span>
+              <span class="mw-resource-detail">
+                MPQ archives, SLK tables &amp; .w3x map formats
+              </span>
             </a>
             <a
               href="https://github.com/yanghuan/CSharp.lua"
@@ -393,18 +398,20 @@ const tutorialChapters = [
 
         <section
           class="mw-panel mw-panel-compact"
+          data-card="tools"
           aria-labelledby="panel-tools-title"
         >
-          <div class="mw-panel-bar">
-            <span class="mw-panel-tag">
-              <Wrench size={14} aria-hidden="true" />
-              <span>Modding Tools &amp; Community</span>
-            </span>
-            <span class="mw-panel-meta">Resources</span>
-          </div>
-          <h2 id="panel-tools-title" class="mw-panel-subtitle">
-            External Tools &amp; Asset Hubs
-          </h2>
+          <header class="mw-card-head">
+            <h2 id="panel-tools-title" class="mw-panel-subtitle">
+              External Tools &amp; Hubs
+            </h2>
+            <div class="mw-card-corner">
+              <span class="mw-panel-meta">Community</span>
+            </div>
+            <small class="mw-card-subtitle">
+              Models, CASC extraction &amp; 3D studios
+            </small>
+          </header>
           <div class="mw-resource-list">
             <a
               href="https://www.hiveworkshop.com/"
@@ -416,7 +423,9 @@ const tutorialChapters = [
                 <span>Hive Workshop</span>
                 <ArrowUpRight size={13} aria-hidden="true" />
               </span>
-              <span class="mw-resource-detail">Models, icons, skins, maps &amp; modding forums</span>
+              <span class="mw-resource-detail">
+                Models, icons, skins, maps &amp; modding forums
+              </span>
             </a>
             <a
               href="http://www.zezula.net/en/casc/main.html"
@@ -428,7 +437,9 @@ const tutorialChapters = [
                 <span>CascView</span>
                 <ArrowUpRight size={13} aria-hidden="true" />
               </span>
-              <span class="mw-resource-detail">Browse &amp; extract Warcraft III CASC storage</span>
+              <span class="mw-resource-detail">
+                Browse &amp; extract Warcraft III CASC storage
+              </span>
             </a>
             <a
               href="https://github.com/Retera/ReteraModelStudio"
@@ -440,7 +451,9 @@ const tutorialChapters = [
                 <span>Retera&apos;s Model Studio</span>
                 <ArrowUpRight size={13} aria-hidden="true" />
               </span>
-              <span class="mw-resource-detail">3D MDX/MDL model viewer &amp; animation editor</span>
+              <span class="mw-resource-detail">
+                3D MDX/MDL model viewer &amp; animation editor
+              </span>
             </a>
           </div>
         </section>

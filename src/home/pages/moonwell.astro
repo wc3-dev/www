@@ -1,5 +1,6 @@
 ---
 import {
+  ArrowRight,
   BookOpen,
   Boxes,
   FolderOpen,
@@ -93,11 +94,12 @@ const cards = [
             href="https://docs.wc3.dev/guides/getting-started/"
             class="mw-btn mw-btn-primary"
           >
-            <Rocket size={16} aria-hidden="true" />
+            <Rocket size={15} aria-hidden="true" />
             <span>Get Started</span>
+            <ArrowRight size={14} aria-hidden="true" />
           </a>
           <a href="https://docs.wc3.dev/" class="mw-btn mw-btn-secondary">
-            <BookOpen size={16} aria-hidden="true" />
+            <BookOpen size={15} aria-hidden="true" />
             <span>Documentation</span>
           </a>
         </div>
@@ -113,7 +115,7 @@ const cards = [
             return (
               <a href={card.href} class="sl-link-card mw-home-card">
                 <span class="title mw-card-title">
-                  <Icon size={18} class="mw-card-icon" aria-hidden="true" />
+                  <Icon size={17} class="mw-card-icon" aria-hidden="true" />
                   <span>{card.title}</span>
                 </span>
                 <span class="description">{card.description}</span>

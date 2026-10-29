@@ -41,7 +41,7 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/mdlsvensson/moonwell",
+          href: "https://github.com/wc3-dev/moonwell",
         },
       ],
       sidebar: [
