@@ -1,7 +1,8 @@
-dist/
-.astro/
-.wrangler/
 node_modules/
+/.svelte-kit/
+/build/
+.wrangler/
 .env
 .env.*
 !.env.example
+vite.config.ts.timestamp-*

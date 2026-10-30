@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <title>wc3.dev</title>
-  <path fill="#223249" d="M6.5 4.5H25.5V27.5L16 23L6.5 27.5Z"/>
-  <path fill="#2d4f67" d="M16 4.5V23L6.5 27.5V4.5Z"/>
-  <path fill="none" stroke="#e6c384" stroke-width="2.6" stroke-linejoin="round" d="M6.5 4.5H25.5V27.5L16 23L6.5 27.5Z"/>
-  <path fill="#dcd7ba" d="M10.4 8.73H12.98V19.43H10.4Z M14.71 8.73H17.29V19.43H14.71Z M19.02 8.73H21.6V19.43H19.02Z"/>
-</svg>

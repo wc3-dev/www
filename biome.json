@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!public/**/*.svg"]
+    "includes": ["**", "!package-lock.json", "!src/**/content"]
   },
   "formatter": {
     "enabled": true,
@@ -15,17 +15,17 @@
     "indentWidth": 2,
     "lineWidth": 100
   },
-  "linter": {
-    "enabled": true
-  },
   "css": {
     "parser": {
       "tailwindDirectives": true
     }
   },
+  "linter": {
+    "enabled": true
+  },
   "overrides": [
     {
-      "includes": ["**/*.astro"],
+      "includes": ["**/*.svelte"],
       "linter": {
         "rules": {
           "style": {

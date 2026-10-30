@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+/* The game's interface font. */
+@font-face {
+  font-family: "Friz Quadrata";
+  src: url("/fonts/friz-quadrata.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* The site's title. */
+@font-face {
+  font-family: LifeCraft;
+  src: url("/fonts/lifecraft.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* The game's interface gold (its NORMAL_FONT_COLOR). */
+:root {
+  --gold: #ffd100;
+  --text: #f0e6d2;
+  --muted: #b5a88f;
+  color-scheme: dark;
+}
+
+html {
+  background: #0b0a09 url("/ui/rock.jpg");
+  color: var(--text);
+  font-family: "Friz Quadrata", Georgia, serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: radial-gradient(ellipse at 50% 40%, transparent 30%, rgb(0 0 0 / 0.75) 100%);
+}

@@ -1,54 +1,38 @@
 {
   "name": "wc3-dev",
-  "type": "module",
-  "version": "0.0.1",
   "private": true,
+  "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "dev": "astro dev --config astro.docs.config.mjs",
-    "dev:docs": "astro dev --config astro.docs.config.mjs",
-    "dev:home": "astro dev --config astro.home.config.mjs",
-    "dev:tutorials": "astro dev --config astro.tutorials.config.mjs",
-    "dev:patch-notes": "astro dev --config astro.patch-notes.config.mjs",
-    "build": "npm run build:home && npm run build:tutorials && npm run build:patch-notes && npm run build:docs",
-    "build:home": "astro build --config astro.home.config.mjs",
-    "build:tutorials": "astro build --config astro.tutorials.config.mjs",
-    "build:patch-notes": "astro build --config astro.patch-notes.config.mjs",
-    "build:docs": "astro build --config astro.docs.config.mjs",
-    "check": "astro check",
-    "preview": "wrangler dev --config wrangler.jsonc",
-    "preview:home": "wrangler dev --config wrangler.jsonc",
-    "preview:docs": "wrangler dev --config wrangler.docs.jsonc",
-    "dry-run": "npm run dry-run:home && npm run dry-run:docs",
-    "dry-run:home": "wrangler deploy --dry-run --config wrangler.jsonc",
-    "dry-run:docs": "wrangler deploy --dry-run --config wrangler.docs.jsonc",
-    "lint": "biome check .",
-    "format": "biome check --write .",
-    "test": "node --test tests/build.test.mjs"
-  },
-  "dependencies": {
-    "@astrojs/starlight": "^0.37.0",
-    "@astrojs/starlight-tailwind": "^4.0.2",
-    "@fontsource-variable/jetbrains-mono": "^5.3.0",
-    "@fontsource-variable/nunito": "^5.3.0",
-    "@fontsource/google-sans": "^5.3.2",
-    "@lucide/astro": "^1.60.0",
-    "@tailwindcss/vite": "^4.3.3",
-    "astro": "^5.16.0",
-    "sharp": "^0.34.0",
-    "tailwindcss": "^4.3.3"
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "wrangler dev",
+    "dry-run": "wrangler deploy --dry-run",
+    "textures": "node scripts/textures.mjs",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "biome check . && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "format": "biome check --write ."
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@biomejs/biome": "^2.5.15",
-    "typescript": "^5.9.0",
-    "wrangler": "^4.14.0"
+    "@biomejs/biome": "2.5.15",
+    "@sveltejs/adapter-static": "4.0.0",
+    "@sveltejs/kit": "3.1.0",
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "@tailwindcss/vite": "4.3.3",
+    "sharp": "0.34.5",
+    "svelte": "5.57.3",
+    "svelte-check": "4.7.7",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "vite": "8.3.5",
+    "wrangler": "4.156.0"
   },
   "allowScripts": {
     "sharp@0.34.5": true,
-    "sharp@0.35.5": true,
-    "esbuild@0.27.7": true,
-    "esbuild@0.25.12": true,
     "esbuild@0.28.2": true,
-    "workerd@1.20261019.1": true
+    "workerd@1.20261023.1": true
+  },
+  "imports": {
+    "#lib/*": "./src/lib/*"
   }
 }
