@@ -9,19 +9,21 @@ import Header from "./Header.svelte";
 let {
   variant = "gold",
   title,
+  subtitle,
   class: className = "",
   children,
 }: {
   variant?: "gold" | "silver" | "tooltip";
   title?: string;
+  subtitle?: string;
   class?: string;
   children: Snippet;
 } = $props();
 </script>
 
-<section class="frame {variant} {className}" class:titled={!!title}>
+<section class="frame {variant} {className}" class:titled={!!title} class:subtitled={!!subtitle}>
   {#if title}
-    <Header>{title}</Header>
+    <Header variant={variant === "gold" ? "gold" : "stone"} {subtitle}>{title}</Header>
   {/if}
   {@render children()}
 </section>
@@ -37,7 +39,11 @@ let {
   }
 
   .frame.titled {
-    padding-top: calc(var(--edge) + 16px);
+    padding-top: calc(var(--edge) + 20px);
+  }
+
+  .frame.subtitled {
+    padding-top: calc(var(--edge) + 35px);
   }
 
   .frame::before,

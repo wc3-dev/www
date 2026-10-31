@@ -3,7 +3,9 @@ title: Moonwell
 description: "All-in-one modding framework for Warcraft III: Reforged."
 ---
 
-import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+<script>
+import LinkCard from "#docs/LinkCard.svelte";
+</script>
 
 Moonwell is a C# modding framework and build toolchain for [Warcraft III: Reforged](https://warcraft3.blizzard.com/).
 
@@ -56,7 +58,7 @@ moonwell build # writes declared object data into a staged copy of the map, comp
 
 ## Guides
 
-<CardGrid>
+<div class="cards">
   <LinkCard
     title="Getting Started"
     description="Install the template and CLI, make a map, and run it in Warcraft III."
@@ -87,11 +89,11 @@ moonwell build # writes declared object data into a staged copy of the map, comp
     description="Run machine-local code with Local.For and catch desyncs as compile errors."
     href="/guides/multiplayer/"
   />
-</CardGrid>
+</div>
 
 ## Reference
 
-<CardGrid>
+<div class="cards">
   <LinkCard
     title="CLI & Build"
     description="Commands, flags, build pipeline steps, development vs. release builds, and error logs."
@@ -112,4 +114,4 @@ moonwell build # writes declared object data into a staged copy of the map, comp
     description="Multiplayer analyzer rules MW0001–MW0006, sync attributes, string literal checks, and build errors."
     href="/reference/diagnostics/"
   />
-</CardGrid>
+</div>

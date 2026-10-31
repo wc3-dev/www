@@ -9,13 +9,17 @@
   font-display: swap;
 }
 
-/* The site's title. */
+/* The site's title. Its licence bars changing or renaming the file, and it goes with Goodmountain-LICENSE.md. */
 @font-face {
-  font-family: LifeCraft;
-  src: url("/fonts/lifecraft.ttf") format("truetype");
+  font-family: Goodmountain;
+  src: url("/fonts/Goodmountain-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  /* The font's own hhea values. Its win values differ, and browsers using them draw it 2px lower. */
+  ascent-override: 100%;
+  descent-override: 21%;
+  line-gap-override: 0%;
 }
 
 /* The game's interface gold (its NORMAL_FONT_COLOR). */

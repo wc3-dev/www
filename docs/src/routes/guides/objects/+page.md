@@ -46,7 +46,7 @@ Every standard class carries the game's values for the map's selected balance se
 
 Moonwell provides three ways to set object fields in a constructor:
 
-1. **Hand-picked property names** for the 98 most common fields across the seven kinds (`Name`, `HitPoints`, `Mana`, `Armor`, `Speed`, `Damage`, `Cooldown`, `ManaCost`, `Range`, `Area`, `Duration`, `Tooltip`, `Icon`, `Model`, and so on — see [Objects & Natives API](/reference/objects-and-natives/#hand-picked-field-names)).
+1. **Hand-picked property names** for the 98 most common fields across the seven kinds (`Name`, `HitPoints`, `Mana`, `Armor`, `Speed`, `Damage`, `Cooldown`, `ManaCost`, `Range`, `Area`, `Duration`, `Tooltip`, `Icon`, `Model`, and so on — see [Objects & Natives API](/reference/objects-and-natives/#hand-picked-property-names-98-fields)).
 2. **Generated property names** from World Editor's English field labels for every other field in the game's metadata (such as `AnimationWalkSpeed` or `Attack1ProjectileArt`).
 3. **Raw four-character field ids** via `Set(fieldId, value)` or `Set(fieldId, level, value)`:
 

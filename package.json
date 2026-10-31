@@ -6,11 +6,14 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
+    "dev:docs": "cd docs && vite dev",
+    "build:docs": "cd docs && vite build",
     "preview": "wrangler dev",
+    "preview:docs": "wrangler dev --config wrangler.docs.jsonc --port 5181",
     "dry-run": "wrangler deploy --dry-run",
     "textures": "node scripts/textures.mjs",
     "prepare": "svelte-kit sync || echo ''",
-    "check": "biome check . && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check": "biome check . && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && cd docs && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "format": "biome check --write ."
   },
   "devDependencies": {
@@ -18,8 +21,10 @@
     "@sveltejs/adapter-static": "4.0.0",
     "@sveltejs/kit": "3.1.0",
     "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "@sveltepress/vite": "1.10.0",
     "@tailwindcss/vite": "4.3.3",
     "sharp": "0.34.5",
+    "shiki": "4.5.0",
     "svelte": "5.57.3",
     "svelte-check": "4.7.7",
     "tailwindcss": "4.3.3",
@@ -33,6 +38,7 @@
     "workerd@1.20261023.1": true
   },
   "imports": {
-    "#lib/*": "./src/lib/*"
+    "#lib/*": "./src/lib/*",
+    "#docs/*": "./docs/src/lib/*"
   }
 }

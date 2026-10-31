@@ -1,0 +1,141 @@
+/* A page's Markdown: running text in Google Sans, headings in the game's own font. */
+.prose {
+  font-family: "Google Sans", "Segoe UI", Arial, sans-serif;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose th {
+  font-family: "Friz Quadrata", Georgia, serif;
+}
+
+.prose h1 {
+  margin: 0 0 1rem;
+  color: var(--gold);
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.2;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.prose h2 {
+  margin: 2.25rem 0 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgb(255 209 0 / 0.25);
+  color: var(--gold);
+  font-size: 1.4rem;
+  font-weight: 400;
+  scroll-margin-top: 1rem;
+}
+
+.prose h3 {
+  margin: 1.75rem 0 0.5rem;
+  color: var(--gold);
+  font-size: 1.1rem;
+  font-weight: 400;
+  scroll-margin-top: 1rem;
+}
+
+.prose h4 {
+  margin: 1.25rem 0 0.5rem;
+  color: #fff;
+  font-weight: 400;
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose table,
+.prose pre {
+  margin: 0 0 1rem;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li {
+  margin-bottom: 0.25rem;
+}
+
+.prose a {
+  color: var(--gold);
+}
+
+.prose a:hover {
+  color: #fff;
+}
+
+.prose strong {
+  color: #fff;
+  font-weight: 400;
+}
+
+.prose code {
+  padding: 0.1em 0.3em;
+  background: rgb(255 255 255 / 0.08);
+  font-family: Consolas, "Cascadia Mono", Menlo, monospace;
+  font-size: 0.9em;
+}
+
+/* Code blocks sit in the game's tooltip edge. */
+.prose pre {
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  border: 16px solid transparent;
+  border-image: url("/ui/frame-tooltip.png") 16 / 16px stretch;
+  background: rgb(0 0 0 / 0.55);
+  background-clip: padding-box;
+  line-height: 1.5;
+  overflow-wrap: normal;
+}
+
+.prose pre code {
+  padding: 0;
+  background: none;
+}
+
+.prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  overflow-wrap: normal;
+}
+
+.prose th {
+  color: var(--gold);
+  font-weight: 400;
+  text-align: left;
+}
+
+.prose th,
+.prose td {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.15);
+}
+
+.prose tbody tr:nth-child(even) {
+  background: rgb(255 255 255 / 0.04);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
