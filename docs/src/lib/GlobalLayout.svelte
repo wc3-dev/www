@@ -8,6 +8,7 @@ import ActionBar from "#lib/ui/ActionBar.svelte";
 import Button from "#lib/ui/Button.svelte";
 import Frame from "#lib/ui/Frame.svelte";
 import { page } from "$app/state";
+import "virtual:uno.css";
 import "../../../src/app.css";
 import "./prose.css";
 import { sections } from "./nav";

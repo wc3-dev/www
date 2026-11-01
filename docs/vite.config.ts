@@ -1,6 +1,6 @@
 import adapter from "@sveltejs/adapter-static";
 import { sveltepress } from "@sveltepress/vite";
-import tailwindcss from "@tailwindcss/vite";
+import UnoCSS from "@unocss/vite";
 import { defineConfig } from "vite";
 import { theme } from "./src/theme.ts";
 
@@ -8,7 +8,7 @@ import { theme } from "./src/theme.ts";
 // landing page's textures, fonts, styles and UI components from the folder above.
 export default defineConfig({
   plugins: [
-    tailwindcss(),
+    UnoCSS("../uno.config.ts"),
     sveltepress({
       theme,
       siteConfig: {
