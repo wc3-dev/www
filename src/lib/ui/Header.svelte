@@ -97,7 +97,7 @@ let {
     min-width: 148px;
     height: 40px;
     margin: 0;
-    padding: 16px 16px 0;
+    padding: 18px 16px 0;
     display: flex;
     align-items: center;
     justify-content: center;
