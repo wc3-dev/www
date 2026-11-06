@@ -99,11 +99,21 @@ let {
     border: 0 solid transparent;
     border-width: 0 12px;
     border-image: url("/ui/header-stone.png") 20 46 21 fill / 5px 12px 6px stretch;
+    isolation: isolate;
     color: var(--text);
     font-size: 0.75rem;
     font-style: italic;
     white-space: nowrap;
     text-shadow: 1px 1px 0 #000;
+  }
+
+  .subtitle::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 12px solid transparent;
+    border-image: url("/ui/frame-tutorial.png") 32 / 12px stretch;
+    pointer-events: none;
   }
 
   .gold {
