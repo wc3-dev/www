@@ -16,7 +16,7 @@ import Grunt from "#lib/ui/Grunt.svelte";
     <h1 class="sr-only">wc3.dev</h1>
     <div class="relative w-full max-w-72">
       <Footman />
-      <Frame variant="silver" title="WC3.DEV" subtitle="modding tools" class="w-full">
+      <Frame variant="silver" header="gold" title="WC3.DEV" subtitle="modding tools" class="w-full">
         <nav class="flex flex-col gap-5">
           <div class="flex flex-col gap-1">
             <Button href="https://github.com/wc3-dev/moonwell">Moonwell</Button>
