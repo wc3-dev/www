@@ -98,13 +98,21 @@ let {
     justify-content: center;
     border: 0 solid transparent;
     border-width: 0 12px;
-    border-image: url("/ui/header-stone.png") 20 46 21 fill / 5px 12px 6px stretch;
     isolation: isolate;
     color: var(--text);
     font-size: 0.75rem;
     font-style: italic;
     white-space: nowrap;
     text-shadow: 1px 1px 0 #000;
+  }
+
+  .subtitle::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    z-index: -1;
+    border: 0 solid transparent;
+    border-image: url("/ui/header-stone.png") 20 46 21 fill / 0 stretch;
   }
 
   .subtitle::after {
