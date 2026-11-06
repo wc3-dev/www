@@ -78,6 +78,7 @@ await Promise.all([
   nineSlice("DialogFrame/UI-DialogBox-Gold-Border.PNG", 32, "frame-gold.png"),
   nineSlice("DialogFrame/UI-DialogBox-Border.PNG", 32, "frame-silver.png"),
   nineSlice("Tooltips/UI-Tooltip-Border.PNG", 16, "frame-tooltip.png"),
+  nineSlice("TUTORIALFRAME/TUTORIALFRAMEBORDER.PNG", 32, "frame-tutorial.png"),
   copy("DialogFrame/UI-DialogBox-Background-Dark.PNG", "frame-background.png"),
   crop("DialogFrame/UI-DialogBox-Gold-Header.PNG", [58, 0, 197, 40], "header-gold.png"),
   crop("DialogFrame/UI-DialogBox-Header.PNG", [118, 3, 394, 80], "header-stone.png"),
