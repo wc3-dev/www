@@ -114,7 +114,7 @@ let {
   .subtitle::before {
     content: "";
     position: absolute;
-    inset: 4px;
+    inset: 3px;
     z-index: -1;
     border: 0 solid transparent;
     border-image: url("/ui/header-stone.png") 20 46 21 fill / 0 stretch;
