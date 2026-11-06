@@ -95,9 +95,9 @@ let {
     left: 50%;
     translate: -50% 0;
     min-width: 148px;
-    height: 45px;
+    height: 40px;
     margin: 0;
-    padding: 14px 16px 0;
+    padding: 16px 16px 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -114,7 +114,7 @@ let {
   .subtitle::before {
     content: "";
     position: absolute;
-    inset: 3px;
+    inset: 3px 1.5px 2px 3px;
     z-index: -1;
     border: 0 solid transparent;
     border-image: url("/ui/header-stone.png") 20 46 21 fill / 0 stretch;
