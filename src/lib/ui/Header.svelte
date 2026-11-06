@@ -7,16 +7,17 @@ import type { Snippet } from "svelte";
 
 let {
   variant = "gold",
+  carved = false,
   subtitle,
   children,
-}: { variant?: "gold" | "stone"; subtitle?: string; children: Snippet } = $props();
+}: { variant?: "gold" | "stone"; carved?: boolean; subtitle?: string; children: Snippet } = $props();
 </script>
 
 {#if subtitle}
   <p class="subtitle">{subtitle}</p>
 {/if}
-{#if variant === "gold"}
-  <h2 class="header gold"><span class="carved">{@render children()}</span></h2>
+{#if carved}
+  <h2 class="header {variant}"><span class="carved">{@render children()}</span></h2>
   <!-- The game's logo lettering: a gold gradient with streaked noise, an inner bevel lit from the top left with a
        maroon shadow, a black outline and a blurred drop shadow. -->
   <svg width="0" height="0" aria-hidden="true">

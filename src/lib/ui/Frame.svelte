@@ -8,14 +8,14 @@ import Header from "./Header.svelte";
 
 let {
   variant = "gold",
-  header = variant === "gold" ? "gold" : "stone",
+  carved = false,
   title,
   subtitle,
   class: className = "",
   children,
 }: {
   variant?: "gold" | "silver" | "tooltip";
-  header?: "gold" | "stone";
+  carved?: boolean;
   title?: string;
   subtitle?: string;
   class?: string;
@@ -25,7 +25,7 @@ let {
 
 <section class="frame {variant} {className}" class:titled={!!title} class:subtitled={!!subtitle}>
   {#if title}
-    <Header variant={header} {subtitle}>{title}</Header>
+    <Header variant={variant === "gold" ? "gold" : "stone"} {carved} {subtitle}>{title}</Header>
   {/if}
   {@render children()}
 </section>
