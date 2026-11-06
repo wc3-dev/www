@@ -10,7 +10,12 @@ let {
   carved = false,
   subtitle,
   children,
-}: { variant?: "gold" | "stone"; carved?: boolean; subtitle?: string; children: Snippet } = $props();
+}: {
+  variant?: "gold" | "stone";
+  carved?: boolean;
+  subtitle?: string;
+  children: Snippet;
+} = $props();
 </script>
 
 {#if subtitle}
