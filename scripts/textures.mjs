@@ -82,6 +82,7 @@ await Promise.all([
   copy("DialogFrame/UI-DialogBox-Background-Dark.PNG", "frame-background.png"),
   crop("DialogFrame/UI-DialogBox-Gold-Header.PNG", [58, 0, 197, 40], "header-gold.png"),
   crop("DialogFrame/UI-DialogBox-Header.PNG", [118, 3, 394, 80], "header-stone.png"),
+  crop("DialogFrame/UI-DialogBox-Header.PNG", [164, 23, 348, 59], "header-stone-fill.png"),
   crop("DialogFrame/UI-DialogBox-Divider.PNG", [0, 0, 193, 16], "divider.png"),
   crop("Buttons/UI-Panel-Button-Up.PNG", [0, 0, 80, 22], "button-up.png"),
   crop("Buttons/UI-Panel-Button-Down.PNG", [0, 0, 80, 22], "button-down.png"),

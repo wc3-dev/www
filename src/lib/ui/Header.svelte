@@ -116,7 +116,7 @@ let {
     position: absolute;
     inset: 3px 1.5px 2px 3px;
     z-index: -1;
-    background: url("/ui/frame-background.png");
+    background: url("/ui/header-stone-fill.png") 0 0 / 100% 100%;
   }
 
   .subtitle::after {
