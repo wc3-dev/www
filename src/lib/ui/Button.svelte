@@ -11,10 +11,29 @@ let {
   children,
   ...rest
 }: { href?: string; children: Snippet } & HTMLAnchorAttributes & HTMLButtonAttributes = $props();
+
+let dragged = $state(false);
 </script>
 
 {#if href}
-  <a class="button" {href} {...rest as HTMLAnchorAttributes}><span>{@render children()}</span></a>
+  <a
+    class="button"
+    class:dragged
+    {href}
+    {...rest as HTMLAnchorAttributes}
+    ondragstart={(event) => {
+      rest.ondragstart?.(event);
+      dragged = !event.defaultPrevented;
+    }}
+    onpointerdown={(event) => {
+      dragged = false;
+      rest.onpointerdown?.(event);
+    }}
+    onkeydown={(event) => {
+      dragged = false;
+      rest.onkeydown?.(event);
+    }}
+  ><span>{@render children()}</span></a>
 {:else}
   <button class="button" type="button" {...rest as HTMLButtonAttributes}>
     <span>{@render children()}</span>
@@ -39,6 +58,7 @@ let {
     text-decoration: none;
     text-shadow: 1px 1px 0 #000;
     cursor: pointer;
+    user-select: none;
   }
 
   .button::before,
@@ -49,13 +69,15 @@ let {
     z-index: -1;
     border: solid transparent;
     border-width: 0 16px;
+    pointer-events: none;
   }
 
   .button::before {
     border-image: url("/ui/button-up.png") 0 12 fill / 0 16px stretch;
   }
 
-  .button:active::before {
+  /* The browser can retain :active after a link drag. */
+  .button:active:not(.dragged)::before {
     border-image-source: url("/ui/button-down.png");
   }
 
@@ -76,7 +98,7 @@ let {
     outline: none;
   }
 
-  .button:active span {
+  .button:active:not(.dragged) span {
     translate: 1px 1px;
   }
 </style>
