@@ -138,6 +138,7 @@ let {
 
 
   .carved {
+    translate: 0 -1px;
     background: linear-gradient(#fff36b, #f5b800 55%, #c76d00);
     background-clip: text;
     color: transparent;
