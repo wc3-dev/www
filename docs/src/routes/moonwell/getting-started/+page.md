@@ -64,7 +64,7 @@ namespace MyMap
 }
 ```
 
-There is no `Main` to write. The build writes one (`MapMain.g.cs`, see [CLI & Build](/reference/cli-and-build/#build-pipeline)) that starts the runtime with your `Map` class. The components in `Map.Components` are added to the game, and their `OnGameStart` is where your code starts.
+There is no `Main` to write. The build writes one (`MapMain.g.cs`, see [CLI & Build](/moonwell/reference/cli-and-build/#build-pipeline)) that starts the runtime with your `Map` class. The components in `Map.Components` are added to the game, and their `OnGameStart` is where your code starts.
 
 ### `Start.cs`
 
@@ -179,7 +179,7 @@ namespace MyMap
 
 ## Next steps
 
-- [Project & World Editor](/guides/project-and-editor/) — how `Map.cs`, `map/`, `assets/`, `ids.json`, and `build/` fit together, and how to place code-declared objects in World Editor.
-- [Objects](/guides/objects/) — declaring units, heroes, items, abilities, buffs, destructables, doodads, and upgrades in C#.
-- [Actors, Components & Reactions](/guides/components-and-reactions/) — writing components and reaction methods across units, items, destructables, players, and the game.
-- [Timers](/guides/abilities-buffs-and-timers/#timers) — `Timer.After` and `Timer.Every`, to run code later or every few seconds.
+- [Project & World Editor](/moonwell/project-and-editor/) — how `Map.cs`, `map/`, `assets/`, `ids.json`, and `build/` fit together, and how to place code-declared objects in World Editor.
+- [Objects](/moonwell/objects/) — declaring units, heroes, items, abilities, buffs, destructables, doodads, and upgrades in C#.
+- [Actors, Components & Reactions](/moonwell/components-and-reactions/) — writing components and reaction methods across units, items, destructables, players, and the game.
+- [Timers](/moonwell/abilities-buffs-and-timers/#timers) — `Timer.After` and `Timer.Every`, to run code later or every few seconds.

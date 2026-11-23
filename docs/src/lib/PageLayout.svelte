@@ -3,6 +3,7 @@
   one. Sveltepress passes the page's frontmatter as fm.
 -->
 <script lang="ts">
+import site from "virtual:sveltepress/site";
 import type { Snippet } from "svelte";
 import Frame from "#lib/ui/Frame.svelte";
 
@@ -20,7 +21,7 @@ let {
 </script>
 
 <svelte:head>
-  <title>{fm.title} | Moonwell Docs</title>
+  <title>{fm.title} | {site.title}</title>
   {#if fm.description}
     <meta name="description" content={fm.description} />
   {/if}

@@ -48,7 +48,7 @@ function anchors() {
 
 export const theme: ResolvedTheme = {
   name: "wc3-dev",
-  globalLayout: "#docs/GlobalLayout.svelte",
+  globalLayout: "",
   pageLayout: "#docs/PageLayout.svelte",
   vitePlugins: (corePlugin) => [corePlugin],
   highlighter: highlight,

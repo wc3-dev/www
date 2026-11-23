@@ -17,5 +17,5 @@ section is where you can share Defend the Village and play what others make.
 ## Scripting with Moonwell
 
 Triggers take you a long way. When you want to write gameplay and object data in C#,
-[Moonwell](/) lets you declare objects and reactions in code and build maps with a single command-line tool. Its [documentation](https://docs.wc3.dev/guides/getting-started/) starts
+[Moonwell](/) lets you declare objects and reactions in code and build maps with a single command-line tool. Its [documentation](https://docs.wc3.dev/moonwell/getting-started/) starts
 with installation and a first map.

@@ -161,4 +161,4 @@ public static class LocalEffects
 }
 ```
 
-See [Diagnostics & Errors](/reference/diagnostics/) for the full reference of `MW0001`–`MW0006` and all six sync attributes.
+See [Diagnostics & Errors](/moonwell/reference/diagnostics/) for the full reference of `MW0001`–`MW0006` and all six sync attributes.

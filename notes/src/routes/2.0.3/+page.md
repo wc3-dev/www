@@ -1,4 +1,7 @@
-# WarCraft III: Reforged - Patch 2.0.3
+---
+title: "WarCraft III: Reforged - Patch 2.0.3"
+---
+
 
 ## **Game Servers**
 

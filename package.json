@@ -8,12 +8,15 @@
     "build": "vite build",
     "dev:docs": "cd docs && vite dev",
     "build:docs": "cd docs && vite build",
+    "dev:notes": "cd notes && vite dev",
+    "build:notes": "cd notes && vite build",
     "preview": "wrangler dev",
     "preview:docs": "wrangler dev --config wrangler.docs.jsonc --port 5181",
+    "preview:notes": "wrangler dev --config wrangler.notes.jsonc --port 5182",
     "dry-run": "wrangler deploy --dry-run",
     "textures": "node scripts/textures.mjs",
     "prepare": "svelte-kit sync || echo ''",
-    "check": "biome check . && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && cd docs && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check": "biome check . && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && cd docs && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && cd ../notes && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "format": "biome check --write ."
   },
   "devDependencies": {

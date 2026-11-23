@@ -1,4 +1,7 @@
-# WarCraft III: Reforged - Patch 2.0.4
+---
+title: "WarCraft III: Reforged - Patch 2.0.4"
+---
+
 
 ## **Matchmaking**
 

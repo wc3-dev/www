@@ -24,6 +24,7 @@ import Grunt from "#lib/ui/Grunt.svelte";
           </div>
           <div class="flex flex-col gap-1">
             <Button href="https://docs.wc3.dev">Documentation</Button>
+            <Button href="https://notes.wc3.dev">Patch Notes</Button>
           </div>
           <div class="flex flex-col gap-1">
             <Button href="https://github.com/wc3-dev">GitHub</Button>

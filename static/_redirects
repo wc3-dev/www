@@ -1,0 +1,4 @@
+# DOCS_REDIRECTS
+/patch-notes https://notes.wc3.dev/ 308
+/patch-notes/ https://notes.wc3.dev/ 308
+/patch-notes/* https://notes.wc3.dev/:splat 308

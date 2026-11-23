@@ -11,10 +11,19 @@ import { page } from "$app/state";
 import "virtual:uno.css";
 import "../../../src/app.css";
 import "./prose.css";
-import { sections } from "./nav";
 import Search from "./Search.svelte";
 
-let { children }: { children: Snippet } = $props();
+let {
+  children,
+  title,
+  href,
+  sections,
+}: {
+  children: Snippet;
+  title: string;
+  href: string;
+  sections: { title: string; pages: { title: string; href: string }[] }[];
+} = $props();
 </script>
 
 <svelte:head>
@@ -27,7 +36,7 @@ let { children }: { children: Snippet } = $props();
 
 <div class="flex min-h-dvh flex-col">
   <header class="top">
-    <a class="logo" href="/">Moonwell</a>
+    <a class="logo" {href}>{title}</a>
     <Search />
     <a class="jump" href="#menu">Menu</a>
   </header>

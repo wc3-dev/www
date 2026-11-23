@@ -1,4 +1,7 @@
-# WarCraft III: Reforged - Patch 3.0.1
+---
+title: "WarCraft III: Reforged - Patch 3.0.1"
+---
+
 
 The patch was initially released on October 8th and later reverted.
 

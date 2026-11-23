@@ -1,0 +1,10 @@
+{
+  "name": "wc3-notes",
+  "compatibility_date": "2026-10-19",
+  "previews": {},
+  "routes": [{ "pattern": "notes.wc3.dev", "custom_domain": true }],
+  "assets": {
+    "directory": "./notes/build",
+    "not_found_handling": "404-page"
+  }
+}

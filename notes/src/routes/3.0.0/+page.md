@@ -1,4 +1,7 @@
-WarCraft III: Reforged - Patch 3.0.0
+---
+title: "WarCraft III: Reforged - Patch 3.0.0"
+---
+
 
 ## **General**
 
