@@ -1,5 +1,12 @@
 /* Quest Log frame, book leaves and achievement panels from Gethe/wow-ui-textures. */
+body:has(.moonwell) {
+  display: flow-root;
+  overflow: hidden;
+}
 .moonwell {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  height: calc(100dvh - 1rem);
   width: min(calc(100% - 1rem), 72rem);
   margin: 0.5rem auto;
 }
@@ -55,11 +62,17 @@
   padding-inline: 0.8rem;
 }
 .moonwell .panes {
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr);
   display: grid;
   grid-template-columns: minmax(12rem, 0.64fr) minmax(0, 1.65fr);
   margin-left: 9px;
 }
 .moonwell .directory {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
   min-width: 0;
   border: solid transparent;
   border-width: 5px 22px 3px 11px;
@@ -67,6 +80,20 @@
   background: #24211e url("./moonwell/stone-tile.webp") repeat padding-box;
   padding: 1rem 0.65rem;
   color: #ffdc91;
+}
+.moonwell .directory .search {
+  flex: none;
+  width: 100%;
+}
+.moonwell #guide-menu {
+  min-height: 0;
+  overflow: auto;
+  margin-right: -24px;
+  padding-right: 3px;
+}
+.moonwell .project-links a[aria-current] {
+  color: #ffdc91;
+  text-decoration: underline;
 }
 .moonwell .directory nav h2 {
   font-size: 1.45rem;
@@ -96,11 +123,46 @@
 .moonwell .reader {
   min-width: 0;
   color: #281c10;
-  padding: 1rem clamp(1rem, 2.5vw, 2.7rem);
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
   border: solid transparent;
   border-width: 9px 31px 8px 9px;
   border-image: url("./moonwell/quest-page.webp") 9 31 8 9 / 9px 31px 8px 9px stretch round;
   background: #d9c598 url("./moonwell/paper-tile.webp") repeat padding-box;
+}
+.moonwell .prose {
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  margin-right: -26px;
+  padding: 1rem clamp(1rem, 2.5vw, 2.7rem);
+}
+.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar {
+  width: 20px;
+}
+.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-track {
+  background: #17130f;
+}
+.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-thumb {
+  min-height: 20px;
+  background: #534535 url("./moonwell/scroll-Knob.png") center / contain no-repeat;
+  border: 1px solid #897757;
+}
+.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical {
+  display: none;
+}
+.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical:start:decrement,
+.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical:end:increment {
+  display: block;
+  height: 20px;
+  background: #17130f center / contain no-repeat;
+}
+.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical:start:decrement {
+  background-image: url("./moonwell/scroll-ScrollUpButton-Up.png");
+}
+.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical:end:increment {
+  background-image: url("./moonwell/scroll-ScrollDownButton-Up.png");
 }
 .moonwell .prose h1,
 .moonwell .prose h2,
@@ -154,7 +216,8 @@
 }
 @media (max-width: 45rem) {
   .moonwell .panes {
-    display: block;
+    display: flex;
+    flex-direction: column;
   }
   .moonwell .titlebar {
     padding-right: 9px;
@@ -165,14 +228,16 @@
     font-size: 0.84rem;
   }
   .moonwell .directory {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
+    max-height: 48%;
     align-items: center;
     gap: 0.5rem;
     padding: 0.4rem 0.5rem;
   }
   .moonwell .directory .search {
-    min-width: 7rem;
+    min-width: 0;
     max-width: none;
   }
   .moonwell .menu-toggle {
@@ -183,12 +248,16 @@
   }
   .moonwell #guide-menu {
     display: none;
-    width: 100%;
+    grid-column: 1 / -1;
+    align-self: stretch;
   }
   .moonwell #guide-menu.open {
     display: block;
   }
   .moonwell .reader {
+    flex: 1;
+  }
+  .moonwell .prose {
     padding: 0.8rem 0.55rem;
   }
 }

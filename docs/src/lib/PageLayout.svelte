@@ -44,11 +44,11 @@ let menuOpen = $state(false);
   <header class="titlebar">
     <a class="home" href={home}><img src={logo} alt={title + " home"} width="58" height="58" /></a>
     <span>{title}</span>
-    <nav class="project-links" aria-label="Other documentation">
-      {#each projects.filter((project) => project.href !== home) as project}
-        <Button href={docs + project.href}>{project.title}</Button>
+    <nav class="project-links" aria-label="Documentation sites">
+      {#each projects as project}
+        <Button href={docs + project.href} aria-current={project.href === home ? "location" : undefined}>{project.title}</Button>
       {/each}
-      {#if !notes}<Button href="https://notes.wc3.dev/">Patch Notes</Button>{/if}
+      <Button href={notes ? "/" : "https://notes.wc3.dev/"} aria-current={notes ? "location" : undefined}>Patch Notes</Button>
     </nav>
   </header>
   <div class="panes">
@@ -75,8 +75,9 @@ let menuOpen = $state(false);
         <a href="https://wc3.dev/">Back to wc3.dev</a>
       </nav>
     </aside>
-    <main class="reader" id="article">
-      <article class="prose">
+    <main class="reader">
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex (The scrollable article needs keyboard focus for paging.) -->
+      <article class="prose" id="article" tabindex="0" aria-label={fm.title}>
         <h1>{fm.title}</h1>
         {@render children()}
       </article>
