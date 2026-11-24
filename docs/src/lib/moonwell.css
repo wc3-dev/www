@@ -78,16 +78,27 @@ body:has(.moonwell) {
 }
 .moonwell .directory,
 .moonwell .reader {
+  position: relative;
   display: grid;
   grid-template-rows: minmax(0, 1fr);
   min-height: 0;
   min-width: 0;
+  padding-top: 7px;
   padding-left: 11px;
   padding-right: 2px;
   /* The texture's right slice contains an empty black socket behind each arrow. */
   border-image: url("./moonwell/quest-index.webp") 5 0 3 11 / 0 0 0 11px stretch;
   background: #24211e url("./moonwell/stone-tile.webp") repeat;
   box-shadow: inset -1px 0 #231f1b, inset -2px 0 #796f60;
+}
+.moonwell .directory::before,
+.moonwell .reader::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 7px;
+  border-image: url("./moonwell/pane-cap.webp") 0 5 0 8 fill / 0 5px 0 8px round;
+  pointer-events: none;
 }
 .moonwell .directory {
   color: #ffdc91;
@@ -99,9 +110,10 @@ body:has(.moonwell) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.65rem 0.65rem 0.4rem;
-  background: #24211e url("./moonwell/stone-tile.webp") repeat;
-  background-clip: padding-box;
+  padding: 0.65rem;
+  background: linear-gradient(#17130f70, #17130f70), #24211e url("./moonwell/stone-tile.webp") repeat;
+  border-bottom: 1px solid #685e4e;
+  box-shadow: 0 2px 3px #100e0bc4;
 }
 .moonwell .directory .search {
   min-width: 0;
@@ -249,7 +261,7 @@ body:has(.moonwell) {
     max-height: 48%;
   }
   .moonwell .directory-tools {
-    padding: 0.5rem 0.5rem 0.4rem;
+    padding: 0.5rem;
   }
   .moonwell .directory .search {
     min-width: 0;
