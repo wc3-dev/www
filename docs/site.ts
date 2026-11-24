@@ -4,14 +4,17 @@ import UnoCSS from "@unocss/vite";
 import { defineConfig } from "vite";
 import { theme } from "./src/theme.ts";
 
-export function docsSite(siteConfig: { title: string; description: string }) {
+export function docsSite(
+  siteConfig: { title: string; description: string },
+  pageLayout = theme.pageLayout,
+) {
   const staticAdapter = adapter({ fallback: "404.html" });
 
   return defineConfig({
     plugins: [
       UnoCSS("../uno.config.ts"),
       sveltepress({
-        theme,
+        theme: { ...theme, pageLayout },
         siteConfig,
         pagefind: { rootSelector: "main" },
         svelteKitOptions: {

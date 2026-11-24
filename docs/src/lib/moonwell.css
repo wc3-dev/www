@@ -1,0 +1,225 @@
+/* Quest Log frame, book leaves and achievement panels from Gethe/wow-ui-textures. */
+.moonwell {
+  width: min(calc(100% - 1rem), 72rem);
+  margin: 0.5rem auto;
+}
+.moonwell .skip {
+  position: absolute;
+  z-index: 3;
+  top: -8rem;
+  padding: 0.5rem;
+  background: #15130f;
+  color: white;
+}
+.moonwell .skip:focus {
+  top: 0.5rem;
+}
+.moonwell .titlebar {
+  position: relative;
+  display: grid;
+  grid-template-rows: 24px auto;
+  align-items: center;
+  min-height: 72px;
+  padding: 11px 24px 3px 76px;
+  text-align: center;
+  border-image: url("./moonwell/quest-title.webp") 10 32 36 76 fill / 10px 24px 36px 76px stretch;
+  color: #ffe293;
+  font:
+    1.1rem / 1.15 "Friz Quadrata",
+    Georgia,
+    serif;
+  text-shadow: 1px 1px #080604;
+}
+.moonwell .home {
+  position: absolute;
+  top: 6px;
+  left: 7px;
+  width: 58px;
+  height: 58px;
+  background: #100f0d;
+  border-radius: 50%;
+}
+.moonwell .home img {
+  width: 100%;
+  height: 100%;
+}
+.moonwell .theme-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2rem;
+}
+.moonwell .theme-buttons button {
+  min-width: 0;
+  height: 28px;
+  padding-inline: 0.8rem;
+}
+.moonwell .theme-buttons button[aria-pressed="true"]::before {
+  border-image-source: url("/ui/button-down.png");
+}
+.moonwell .panes {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.64fr) minmax(0, 1.65fr);
+  margin-left: 9px;
+}
+.moonwell .directory {
+  min-width: 0;
+  border: solid transparent;
+  border-width: 5px 22px 3px 11px;
+  border-image: url("./moonwell/quest-index.webp") 5 22 3 11 fill / 5px 22px 3px 11px stretch round;
+  padding: 1rem 0.65rem;
+  color: #ffdc91;
+}
+.moonwell .directory nav h2 {
+  font-size: 1.45rem;
+  margin: 1.35rem 0.6rem 0.35rem;
+}
+.moonwell .directory nav a {
+  display: block;
+  padding: 0.25rem 0.8rem;
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.moonwell .directory nav a:hover {
+  text-decoration: underline;
+}
+.moonwell .directory nav .deep {
+  padding-left: 1.6rem;
+  font-size: 0.93rem;
+}
+.moonwell .directory nav a[aria-current] {
+  color: white;
+  background: url("./moonwell/quest-highlight.webp") center / 100% 100%;
+}
+.moonwell .menu-toggle {
+  display: none;
+}
+.moonwell .reader {
+  min-width: 0;
+  color: #281c10;
+  padding: 1rem clamp(1rem, 2.5vw, 2.7rem);
+  border: solid transparent;
+  border-width: 9px 31px 8px 9px;
+  border-image: url("./moonwell/quest-page.webp") 9 31 8 9 fill / 9px 31px 8px 9px stretch round;
+}
+.moonwell .prose h1,
+.moonwell .prose h2,
+.moonwell .prose h3,
+.moonwell .prose h4,
+.moonwell .prose th {
+  color: #33200d;
+  text-shadow: none;
+}
+.moonwell .prose h1 {
+  font-size: clamp(2.2rem, 3.4vw, 3.7rem);
+  line-height: 1.15;
+  padding-bottom: 1rem;
+  background: url("./moonwell/quest-divider.webp") left bottom / min(100%, 23rem) 13px no-repeat;
+}
+.moonwell .prose h2 {
+  border-color: #7b582e55;
+}
+.moonwell .prose strong {
+  color: inherit;
+  font-weight: 700;
+}
+.moonwell .prose a {
+  color: #5c250b;
+}
+.moonwell .prose .card,
+.moonwell .prose .card strong {
+  color: #ffe09b;
+}
+.moonwell .prose pre {
+  background: #141311;
+  color: #f4e5c7;
+}
+.moonwell .prose th,
+.moonwell .prose td {
+  border-color: #67472966;
+}
+.moonwell .prose .cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+.moonwell .sill {
+  height: 29px;
+  margin-left: 9px;
+  border-image: url("./moonwell/quest-foot.webp") 5 88 7 32 fill / 5px 88px 7px 32px stretch;
+}
+.moonwell footer {
+  padding: 0.65rem 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.moonwell[data-theme="Spellbook"] .directory,
+.moonwell[data-theme="Spellbook"] .reader {
+  border-width: 16px 22px 25px;
+  border-image:
+    url("./moonwell/book-page.webp") 24 30 41 66 fill / 16px 22px 25px 30px stretch round;
+}
+.moonwell[data-theme="Spellbook"] .directory {
+  color: #38250c;
+  border-image-source: url("./moonwell/book-left.webp");
+  border-image-slice: 24 8 41 30 fill;
+}
+.moonwell[data-theme="Spellbook"] .directory a[aria-current] {
+  color: #401c0a;
+  font-weight: bold;
+}
+.moonwell[data-theme="Achievements"] .panes {
+  grid-template-columns: minmax(13rem, 0.6fr) minmax(0, 1.65fr);
+}
+.moonwell[data-theme="Achievements"] .directory {
+  border-image: url("/ui/frame-gold.png") 32 / 12px stretch;
+  background: url("/ui/frame-background.png");
+}
+.moonwell[data-theme="Achievements"] .directory nav a {
+  border: 4px solid transparent;
+  border-image: url("./moonwell/category.webp") 6 12 fill / 4px 8px stretch;
+}
+.moonwell[data-theme="Achievements"] .reader {
+  border-image: url("./moonwell/award-row.webp") 24 25 fill / 15px stretch round;
+}
+@media (max-width: 45rem) {
+  .moonwell .panes,
+  .moonwell[data-theme="Achievements"] .panes {
+    display: block;
+  }
+  .moonwell .titlebar {
+    padding-right: 9px;
+    border-image-width: 10px 9px 36px 76px;
+  }
+  .moonwell .theme-buttons button {
+    padding-inline: 0.3rem;
+    font-size: 0.84rem;
+  }
+  .moonwell .directory {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.5rem;
+  }
+  .moonwell .directory .search {
+    min-width: 7rem;
+    max-width: none;
+  }
+  .moonwell .menu-toggle {
+    display: block;
+    color: inherit;
+    border: 1px solid currentColor;
+    padding: 0.15rem 0.5rem;
+  }
+  .moonwell #guide-menu {
+    display: none;
+    width: 100%;
+  }
+  .moonwell #guide-menu.open {
+    display: block;
+  }
+  .moonwell .reader {
+    padding: 0.8rem 0.55rem;
+  }
+}
