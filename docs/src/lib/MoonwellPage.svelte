@@ -1,6 +1,6 @@
 <script lang="ts">
 import site from "virtual:sveltepress/site";
-import { type ComponentProps, onMount } from "svelte";
+import type { ComponentProps } from "svelte";
 import Button from "#lib/ui/Button.svelte";
 import { page } from "$app/state";
 import logo from "./moonwell/moonwell.png";
@@ -13,28 +13,7 @@ import "./prose.css";
 import "./moonwell.css";
 
 let { fm, children }: ComponentProps<typeof PageLayout> = $props();
-const themes = ["Quest Log", "Spellbook", "Achievements"] as const;
-type Theme = (typeof themes)[number];
-let theme = $state<Theme>("Quest Log");
 let menuOpen = $state(false);
-
-onMount(() => {
-  try {
-    const saved = localStorage.getItem("moonwell-theme");
-    theme = themes.find((name) => name === saved) ?? "Quest Log";
-  } catch {
-    // Storage may be disabled.
-  }
-});
-
-function selectTheme(name: Theme) {
-  theme = name;
-  try {
-    localStorage.setItem("moonwell-theme", name);
-  } catch {
-    // The selection still applies to this page.
-  }
-}
 </script>
 
 <svelte:head>
@@ -42,15 +21,16 @@ function selectTheme(name: Theme) {
   {#if fm.description}<meta name="description" content={fm.description} />{/if}
 </svelte:head>
 
-<div class="moonwell" data-theme={theme}>
+<div class="moonwell">
   <a class="skip" href="#article">Skip to content</a>
   <header class="titlebar">
     <a class="home" href="/moonwell/"><img src={logo} alt="Moonwell documentation home" width="58" height="58" /></a>
     <span>Moonwell Documentation</span>
-    <nav class="theme-buttons" aria-label="Documentation theme">
-      {#each themes as name}
-        <Button aria-pressed={theme === name} onclick={() => selectTheme(name)}>{name}</Button>
+    <nav class="project-links" aria-label="Other documentation">
+      {#each projects.filter((project) => project.href !== "/moonwell/") as project}
+        <Button href={project.href}>{project.title}</Button>
       {/each}
+      <Button href="https://notes.wc3.dev/">Patch Notes</Button>
     </nav>
   </header>
   <div class="panes">

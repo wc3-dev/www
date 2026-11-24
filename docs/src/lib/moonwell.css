@@ -43,19 +43,16 @@
   width: 100%;
   height: 100%;
 }
-.moonwell .theme-buttons {
+.moonwell .project-links {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.2rem;
 }
-.moonwell .theme-buttons button {
+.moonwell .project-links a {
   min-width: 0;
   height: 28px;
   padding-inline: 0.8rem;
-}
-.moonwell .theme-buttons button[aria-pressed="true"]::before {
-  border-image-source: url("/ui/button-down.png");
 }
 .moonwell .panes {
   display: grid;
@@ -153,45 +150,15 @@
   color: var(--muted);
   font-size: 0.85rem;
 }
-.moonwell[data-theme="Spellbook"] .directory,
-.moonwell[data-theme="Spellbook"] .reader {
-  border-width: 16px 22px 25px;
-  border-image:
-    url("./moonwell/book-page.webp") 24 30 41 66 fill / 16px 22px 25px 30px stretch round;
-}
-.moonwell[data-theme="Spellbook"] .directory {
-  color: #38250c;
-  border-image-source: url("./moonwell/book-left.webp");
-  border-image-slice: 24 8 41 30 fill;
-}
-.moonwell[data-theme="Spellbook"] .directory a[aria-current] {
-  color: #401c0a;
-  font-weight: bold;
-}
-.moonwell[data-theme="Achievements"] .panes {
-  grid-template-columns: minmax(13rem, 0.6fr) minmax(0, 1.65fr);
-}
-.moonwell[data-theme="Achievements"] .directory {
-  border-image: url("/ui/frame-gold.png") 32 / 12px stretch;
-  background: url("/ui/frame-background.png");
-}
-.moonwell[data-theme="Achievements"] .directory nav a {
-  border: 4px solid transparent;
-  border-image: url("./moonwell/category.webp") 6 12 fill / 4px 8px stretch;
-}
-.moonwell[data-theme="Achievements"] .reader {
-  border-image: url("./moonwell/award-row.webp") 24 25 fill / 15px stretch round;
-}
 @media (max-width: 45rem) {
-  .moonwell .panes,
-  .moonwell[data-theme="Achievements"] .panes {
+  .moonwell .panes {
     display: block;
   }
   .moonwell .titlebar {
     padding-right: 9px;
     border-image-width: 10px 9px 36px 76px;
   }
-  .moonwell .theme-buttons button {
+  .moonwell .project-links a {
     padding-inline: 0.3rem;
     font-size: 0.84rem;
   }
