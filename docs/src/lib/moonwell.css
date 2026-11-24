@@ -63,7 +63,8 @@
   min-width: 0;
   border: solid transparent;
   border-width: 5px 22px 3px 11px;
-  border-image: url("./moonwell/quest-index.webp") 5 22 3 11 fill / 5px 22px 3px 11px stretch round;
+  border-image: url("./moonwell/quest-index.webp") 5 22 3 11 / 5px 22px 3px 11px stretch round;
+  background: #24211e url("./moonwell/stone-tile.webp") repeat padding-box;
   padding: 1rem 0.65rem;
   color: #ffdc91;
 }
@@ -98,7 +99,8 @@
   padding: 1rem clamp(1rem, 2.5vw, 2.7rem);
   border: solid transparent;
   border-width: 9px 31px 8px 9px;
-  border-image: url("./moonwell/quest-page.webp") 9 31 8 9 fill / 9px 31px 8px 9px stretch round;
+  border-image: url("./moonwell/quest-page.webp") 9 31 8 9 / 9px 31px 8px 9px stretch round;
+  background: #d9c598 url("./moonwell/paper-tile.webp") repeat padding-box;
 }
 .moonwell .prose h1,
 .moonwell .prose h2,

@@ -1,15 +1,23 @@
-<!--
-  One docs page: its Markdown in a frame, and beside it a tooltip with the page's headings, on screens wide enough for
-  one. Sveltepress passes the page's frontmatter as fm.
--->
 <script lang="ts">
 import site from "virtual:sveltepress/site";
 import type { Snippet } from "svelte";
-import Frame from "#lib/ui/Frame.svelte";
+import Button from "#lib/ui/Button.svelte";
+import { page } from "$app/state";
+import logo from "./moonwell/moonwell.png";
+import { projects } from "./nav";
+import Search from "./Search.svelte";
+import "virtual:uno.css";
+import "../../../src/app.css";
+import "./prose.css";
+import "./moonwell.css";
 
 let {
   fm,
   children,
+  title,
+  home,
+  sections = [],
+  notes = false,
 }: {
   fm: {
     title?: string;
@@ -17,86 +25,63 @@ let {
     anchors?: { id: string; title: string; depth: number }[];
   };
   children: Snippet;
+  title: string;
+  home: string;
+  sections?: { title: string; pages: { title: string; href: string }[] }[];
+  notes?: boolean;
 } = $props();
+const docs = $derived(notes ? "https://docs.wc3.dev" : "");
+let menuOpen = $state(false);
 </script>
 
 <svelte:head>
   <title>{fm.title} | {site.title}</title>
-  {#if fm.description}
-    <meta name="description" content={fm.description} />
-  {/if}
+  {#if fm.description}<meta name="description" content={fm.description} />{/if}
 </svelte:head>
 
-<div class="page">
-  <Frame variant="silver" class="min-w-0 flex-1">
-    <article class="prose">
-      <h1>{fm.title}</h1>
-      {@render children()}
-    </article>
-  </Frame>
-
-  {#if fm.anchors?.length}
-    <aside data-pagefind-ignore>
-      <Frame variant="tooltip">
-        <h2>On this page</h2>
-        <ul>
-          {#each fm.anchors as anchor}
-            <li class:deep={anchor.depth === 3}><a href="#{anchor.id}">{anchor.title}</a></li>
+<div class="moonwell">
+  <a class="skip" href="#article">Skip to content</a>
+  <header class="titlebar">
+    <a class="home" href={home}><img src={logo} alt={title + " home"} width="58" height="58" /></a>
+    <span>{title}</span>
+    <nav class="project-links" aria-label="Other documentation">
+      {#each projects.filter((project) => project.href !== home) as project}
+        <Button href={docs + project.href}>{project.title}</Button>
+      {/each}
+      {#if !notes}<Button href="https://notes.wc3.dev/">Patch Notes</Button>{/if}
+    </nav>
+  </header>
+  <div class="panes">
+    <aside class="directory">
+      <Search />
+      <button class="menu-toggle" aria-expanded={menuOpen} aria-controls="guide-menu" onclick={() => (menuOpen = !menuOpen)}>Contents</button>
+      <nav id="guide-menu" class:open={menuOpen} aria-label="Documentation contents">
+        {#each sections as section}
+          <h2>{section.title}</h2>
+          {#each section.pages as link}
+            <a href={link.href} aria-current={page.url.pathname === link.href ? "page" : undefined}>{link.title}</a>
           {/each}
-        </ul>
-      </Frame>
+        {/each}
+        {#if fm.anchors?.length}
+          <h2>In this guide</h2>
+          {#each fm.anchors as anchor}
+            <a class:deep={anchor.depth === 3} href={'#' + anchor.id} onclick={() => (menuOpen = false)}>{anchor.title}</a>
+          {/each}
+        {/if}
+        <h2>Documentation</h2>
+        {#each projects as project}<a href={docs + project.href}>{project.title}</a>{/each}
+        <a href={docs + "/"}>All projects</a>
+        <a href="https://notes.wc3.dev/">Patch notes</a>
+        <a href="https://wc3.dev/">Back to wc3.dev</a>
+      </nav>
     </aside>
-  {/if}
+    <main class="reader" id="article">
+      <article class="prose">
+        <h1>{fm.title}</h1>
+        {@render children()}
+      </article>
+    </main>
+  </div>
+  <div class="sill" aria-hidden="true"></div>
+  <footer>Not affiliated with Blizzard Entertainment</footer>
 </div>
-
-<style>
-  .page {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.5rem;
-  }
-
-  aside {
-    display: none;
-    position: sticky;
-    top: 1rem;
-    flex: none;
-    width: 16rem;
-    max-height: calc(100dvh - 2rem);
-    overflow-y: auto;
-  }
-
-  aside h2 {
-    margin: 0 0 0.5rem;
-    color: var(--gold);
-    font-size: 0.9rem;
-    font-weight: 400;
-  }
-
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
-
-  .deep {
-    padding-left: 0.75rem;
-  }
-
-  aside a {
-    color: var(--text);
-    text-decoration: none;
-  }
-
-  aside a:hover {
-    color: #fff;
-  }
-
-  @media (min-width: 88rem) {
-    aside {
-      display: block;
-    }
-  }
-</style>

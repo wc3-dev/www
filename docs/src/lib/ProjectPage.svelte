@@ -1,21 +1,11 @@
 <script lang="ts">
 import type { ComponentProps } from "svelte";
-import GlobalLayout from "#docs/GlobalLayout.svelte";
-import PageLayout from "#docs/PageLayout.svelte";
+import PageLayout from "./PageLayout.svelte";
 import { page } from "$app/state";
-import MoonwellPage from "./MoonwellPage.svelte";
-import { projects } from "./nav";
+import { projects, moonwellSections } from "./nav";
 
-let { fm, children }: ComponentProps<typeof PageLayout> = $props();
-
+let { fm, children }: Pick<ComponentProps<typeof PageLayout>, "fm" | "children"> = $props();
 const project = $derived(projects.find(({ href }) => page.url.pathname.startsWith(href)));
-const projectMenu = { title: "Documentation", pages: projects };
 </script>
 
-{#if project?.href === "/moonwell/"}
-  <MoonwellPage {fm} {children} />
-{:else}
-  <GlobalLayout title={project?.title ?? "Documentation"} href={project?.href ?? "/"} sections={[projectMenu]}>
-    <PageLayout {fm} {children} />
-  </GlobalLayout>
-{/if}
+<PageLayout {fm} {children} title={project ? project.title + " Documentation" : "Warcraft III Modding Docs"} home={project?.href ?? "/"} sections={project?.href === "/moonwell/" ? moonwellSections : []} />
