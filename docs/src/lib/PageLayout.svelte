@@ -5,6 +5,7 @@ import Button from "#lib/ui/Button.svelte";
 import { page } from "$app/state";
 import logo from "./moonwell/moonwell.png";
 import { projects } from "./nav";
+import QuestScrollbar from "./QuestScrollbar.svelte";
 import Search from "./Search.svelte";
 import "virtual:uno.css";
 import "../../../src/app.css";
@@ -56,7 +57,7 @@ let menuOpen = $state(false);
   </header>
   <div class="panes">
     <aside class="directory">
-      <div class="directory-scroll">
+      <div class="directory-scroll" id="directory-scroll">
         <button class="menu-toggle" aria-expanded={menuOpen} aria-controls="guide-menu" onclick={() => (menuOpen = !menuOpen)}>Contents</button>
         <nav id="guide-menu" class:open={menuOpen} aria-label="Documentation contents">
           {#each sections as section}
@@ -78,13 +79,17 @@ let menuOpen = $state(false);
           <a href="https://wc3.dev/">Back to wc3.dev</a>
         </nav>
       </div>
+      <QuestScrollbar target="directory-scroll" label="documentation contents" />
     </aside>
     <main class="reader">
       <!-- svelte-ignore a11y_no_noninteractive_tabindex (The scrollable article needs keyboard focus for paging.) -->
       <article class="prose" id="article" tabindex="0" aria-label={fm.title}>
-        <h1>{fm.title}</h1>
-        {@render children()}
+        <div>
+          <h1>{fm.title}</h1>
+          {@render children()}
+        </div>
       </article>
+      <QuestScrollbar target="article" label="article" />
     </main>
   </div>
   <footer class="sill">Not affiliated with Blizzard Entertainment</footer>

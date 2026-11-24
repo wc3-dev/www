@@ -79,6 +79,16 @@ body:has(.moonwell) {
   height: 28px;
   padding-inline: 0.8rem;
 }
+.moonwell .project-links a::after {
+  content: none;
+}
+.moonwell .project-links a:is(:hover, :focus-visible)::before {
+  filter: brightness(1.35);
+}
+.moonwell .project-links a:focus-visible {
+  outline: 1px solid #ffdc91;
+  outline-offset: 1px;
+}
 .moonwell .panes {
   min-height: 0;
   grid-template-rows: minmax(0, 1fr);
@@ -163,6 +173,12 @@ body:has(.moonwell) {
 }
 .moonwell .prose {
   padding: 1rem clamp(1rem, 2.5vw, 2.7rem);
+}
+@media (forced-colors: none) {
+  .moonwell :is(.prose, .directory-scroll):has(+ .quest-scrollbar) {
+    scrollbar-width: none;
+    margin-right: 22px;
+  }
 }
 .moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar {
   width: 22px;
