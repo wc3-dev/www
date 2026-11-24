@@ -24,12 +24,12 @@ body:has(.moonwell) {
 .moonwell .titlebar {
   position: relative;
   display: grid;
-  grid-template-rows: 24px auto;
+  grid-template-rows: 21px auto;
   align-items: center;
   min-height: 72px;
-  padding: 11px 24px 3px 76px;
+  padding: 14px 24px 0 76px;
   text-align: center;
-  border-image: url("./moonwell/quest-title.webp") 10 32 36 76 fill / 10px 24px 36px 76px stretch;
+  border-image: url("./moonwell/quest-title.webp") 35 32 2 76 fill / 35px 24px 2px 76px stretch;
   color: #ffe293;
   font:
     1.1rem / 1.15 "Friz Quadrata",
@@ -49,12 +49,19 @@ body:has(.moonwell) {
 .moonwell .home img {
   width: 100%;
   height: 100%;
+  image-rendering: auto;
+  filter: blur(0.4px);
 }
 .moonwell .project-links {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.2rem;
+  padding-block: 4px;
+}
+.moonwell .titlebar > span {
+  font-size: 0.875rem;
+  line-height: 1;
 }
 .moonwell .project-links a {
   min-width: 0;
@@ -221,7 +228,7 @@ body:has(.moonwell) {
   }
   .moonwell .titlebar {
     padding-right: 9px;
-    border-image-width: 10px 9px 36px 76px;
+    border-image-width: 35px 9px 2px 76px;
   }
   .moonwell .project-links a {
     padding-inline: 0.3rem;
