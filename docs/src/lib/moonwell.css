@@ -96,10 +96,9 @@ body:has(.moonwell) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 1rem 0.65rem 0.4rem;
+  padding: 0.65rem 0.65rem 0.4rem;
   background: #24211e url("./moonwell/stone-tile.webp") repeat;
   background-clip: padding-box;
-  margin-top: 5px;
 }
 .moonwell .directory .search {
   min-width: 0;
@@ -145,6 +144,7 @@ body:has(.moonwell) {
 }
 .moonwell .reader {
   color: #eee8da;
+  padding-right: 2px;
 }
 .moonwell :is(.prose, .directory-scroll) {
   overflow: auto;
@@ -156,6 +156,9 @@ body:has(.moonwell) {
 }
 .moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar {
   width: 22px;
+}
+.moonwell .prose::-webkit-scrollbar {
+  width: 18px;
 }
 .moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar-track {
   background: #24211e;
@@ -192,8 +195,6 @@ body:has(.moonwell) {
 .moonwell .prose h1 {
   font-size: clamp(2.2rem, 3.4vw, 3.7rem);
   line-height: 1.15;
-  padding-bottom: 1rem;
-  background: url("./moonwell/quest-divider.webp") left bottom / min(100%, 23rem) 13px no-repeat;
 }
 .moonwell .prose h2 {
   border-color: #a18c605e;
@@ -248,7 +249,7 @@ body:has(.moonwell) {
     max-height: 48%;
   }
   .moonwell .directory-tools {
-    padding: 0.4rem 0.5rem;
+    padding: 0.5rem 0.5rem 0.4rem;
   }
   .moonwell .directory .search {
     min-width: 0;
