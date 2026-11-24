@@ -56,9 +56,9 @@ async function search() {
 <style>
   .search {
     position: relative;
-    flex: 1;
-    max-width: 24rem;
-    margin-left: auto;
+    flex: 1 1 8rem;
+    min-width: 0;
+    max-width: 16rem;
   }
 
   input {
@@ -78,9 +78,11 @@ async function search() {
   .results {
     position: absolute;
     top: 100%;
-    right: 0;
-    width: min(32rem, calc(100vw - 2rem));
+    left: 0;
+    width: min(32rem, calc(100vw - 7rem));
     margin-top: 0.25rem;
+    max-height: 65dvh;
+    overflow-y: auto;
   }
 
   ul {

@@ -44,20 +44,20 @@ let menuOpen = $state(false);
   <header class="titlebar">
     <a class="home" href={home}><img src={logo} alt={title + " home"} width="58" height="58" /></a>
     <span>{title}</span>
-    <nav class="project-links" aria-label="Documentation sites">
-      {#each projects as project}
-        <Button href={docs + project.href} aria-current={project.href === home ? "location" : undefined}>{project.title}</Button>
-      {/each}
-      <Button href={notes ? "/" : "https://notes.wc3.dev/"} aria-current={notes ? "location" : undefined}>Patch Notes</Button>
-    </nav>
+    <div class="header-tools">
+      <Search />
+      <nav class="project-links" aria-label="Documentation sites">
+        {#each projects as project}
+          <Button href={docs + project.href} aria-current={project.href === home ? "location" : undefined}>{project.title}</Button>
+        {/each}
+        <Button href={notes ? "/" : "https://notes.wc3.dev/"} aria-current={notes ? "location" : undefined}>Patch Notes</Button>
+      </nav>
+    </div>
   </header>
   <div class="panes">
     <aside class="directory">
       <div class="directory-scroll">
-        <div class="directory-tools">
-          <Search />
-          <button class="menu-toggle" aria-expanded={menuOpen} aria-controls="guide-menu" onclick={() => (menuOpen = !menuOpen)}>Contents</button>
-        </div>
+        <button class="menu-toggle" aria-expanded={menuOpen} aria-controls="guide-menu" onclick={() => (menuOpen = !menuOpen)}>Contents</button>
         <nav id="guide-menu" class:open={menuOpen} aria-label="Documentation contents">
           {#each sections as section}
             <h2>{section.title}</h2>

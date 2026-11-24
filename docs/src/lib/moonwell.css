@@ -53,6 +53,16 @@ body:has(.moonwell) {
   image-rendering: auto;
   filter: blur(0.4px);
 }
+.moonwell .header-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+  text-align: left;
+}
+.moonwell .titlebar {
+  z-index: 2;
+}
 .moonwell .project-links {
   display: flex;
   flex-wrap: wrap;
@@ -83,7 +93,7 @@ body:has(.moonwell) {
   grid-template-rows: minmax(0, 1fr);
   min-height: 0;
   min-width: 0;
-  padding-top: 7px;
+  padding-top: 11px;
   padding-left: 11px;
   padding-right: 2px;
   /* The texture's right slice contains an empty black socket behind each arrow. */
@@ -96,28 +106,12 @@ body:has(.moonwell) {
   content: "";
   position: absolute;
   inset: 0 0 auto;
-  height: 7px;
-  border-image: url("./moonwell/pane-cap.webp") 0 5 0 8 fill / 0 5px 0 8px round;
+  height: 11px;
+  border-image: url("./moonwell/pane-cap.webp") 0 0 0 11 fill / 0 0 0 11px round;
   pointer-events: none;
 }
 .moonwell .directory {
   color: #ffdc91;
-}
-.moonwell .directory-tools {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem;
-  background: linear-gradient(#17130f70, #17130f70), #24211e url("./moonwell/stone-tile.webp") repeat;
-  border-bottom: 1px solid #685e4e;
-  box-shadow: 0 2px 3px #100e0bc4;
-}
-.moonwell .directory .search {
-  min-width: 0;
-  width: 100%;
 }
 .moonwell #guide-menu {
   padding: 0 0.65rem 1rem;
@@ -244,6 +238,17 @@ body:has(.moonwell) {
   color: var(--muted);
   font-size: 0.85rem;
 }
+@media (max-width: 58rem) {
+  .moonwell .header-tools {
+    display: flex;
+    flex-wrap: wrap;
+    padding-block: 4px;
+  }
+  .moonwell .project-links {
+    justify-content: flex-start;
+    padding-block: 0;
+  }
+}
 @media (max-width: 45rem) {
   .moonwell .panes {
     display: flex;
@@ -260,15 +265,9 @@ body:has(.moonwell) {
   .moonwell .directory {
     max-height: 48%;
   }
-  .moonwell .directory-tools {
-    padding: 0.5rem;
-  }
-  .moonwell .directory .search {
-    min-width: 0;
-    max-width: none;
-  }
   .moonwell .menu-toggle {
     display: block;
+    margin: 0.5rem;
     color: inherit;
     border: 1px solid currentColor;
     padding: 0.15rem 0.5rem;
