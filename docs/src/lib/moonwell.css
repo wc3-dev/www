@@ -76,16 +76,19 @@ body:has(.moonwell) {
   grid-template-columns: minmax(12rem, 0.64fr) minmax(0, 1.65fr);
   margin-left: 9px;
 }
+.moonwell .directory,
+.moonwell .reader {
+  border: solid transparent;
+  border-width: 5px 22px 3px 11px;
+  border-image: url("./moonwell/quest-index.webp") 5 22 3 11 / 5px 22px 3px 11px stretch round;
+  background: #24211e url("./moonwell/stone-tile.webp") repeat padding-box;
+}
 .moonwell .directory {
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
   min-width: 0;
-  border: solid transparent;
-  border-width: 5px 22px 3px 11px;
-  border-image: url("./moonwell/quest-index.webp") 5 22 3 11 / 5px 22px 3px 11px stretch round;
-  background: #24211e url("./moonwell/stone-tile.webp") repeat padding-box;
   padding: 1rem 0.65rem;
   color: #ffdc91;
 }
@@ -130,32 +133,28 @@ body:has(.moonwell) {
 }
 .moonwell .reader {
   min-width: 0;
-  color: #281c10;
+  color: #eee8da;
   min-height: 0;
   display: grid;
   grid-template-rows: minmax(0, 1fr);
-  border: solid transparent;
-  border-width: 9px 31px 8px 9px;
-  border-image: url("./moonwell/quest-page.webp") 9 31 8 9 / 9px 31px 8px 9px stretch round;
-  background: #d9c598 url("./moonwell/paper-tile.webp") repeat padding-box;
 }
 .moonwell .prose {
   overflow: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
-  margin-right: -26px;
+  margin-right: -21px;
   padding: 1rem clamp(1rem, 2.5vw, 2.7rem);
 }
 .moonwell :is(.prose, #guide-menu)::-webkit-scrollbar {
   width: 20px;
 }
 .moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-track {
-  background: #17130f;
+  background: #17130f url("./moonwell/scroll-track.webp") center / 100% auto repeat-y;
 }
 .moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-thumb {
   min-height: 20px;
-  background: #534535 url("./moonwell/scroll-Knob.png") center / contain no-repeat;
-  border: 1px solid #897757;
+  border: 5px solid transparent;
+  border-image: url("./moonwell/scroll-Knob.png") 5 fill / 5px stretch;
 }
 .moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical {
   display: none;
@@ -177,7 +176,7 @@ body:has(.moonwell) {
 .moonwell .prose h3,
 .moonwell .prose h4,
 .moonwell .prose th {
-  color: #33200d;
+  color: #ffdc91;
   text-shadow: none;
 }
 .moonwell .prose h1 {
@@ -187,14 +186,14 @@ body:has(.moonwell) {
   background: url("./moonwell/quest-divider.webp") left bottom / min(100%, 23rem) 13px no-repeat;
 }
 .moonwell .prose h2 {
-  border-color: #7b582e55;
+  border-color: #a18c605e;
 }
 .moonwell .prose strong {
   color: inherit;
   font-weight: 700;
 }
 .moonwell .prose a {
-  color: #5c250b;
+  color: #ffe09b;
 }
 .moonwell .prose .card,
 .moonwell .prose .card strong {
@@ -206,7 +205,7 @@ body:has(.moonwell) {
 }
 .moonwell .prose th,
 .moonwell .prose td {
-  border-color: #67472966;
+  border-color: #a18c605e;
 }
 .moonwell .prose .cards {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
