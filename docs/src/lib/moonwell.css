@@ -89,12 +89,13 @@ body:has(.moonwell) {
 .moonwell .directory,
 .moonwell .reader {
   --right-rail-width: 2px;
+  --pane-cap-height: 8px;
   position: relative;
   display: grid;
   grid-template-rows: minmax(0, 1fr);
   min-height: 0;
   min-width: 0;
-  padding-top: 11px;
+  padding-top: var(--pane-cap-height);
   padding-left: 11px;
   padding-right: var(--right-rail-width);
   /* The texture's right slice contains an empty black socket behind each arrow. */
@@ -107,7 +108,7 @@ body:has(.moonwell) {
   content: "";
   position: absolute;
   inset: 0 var(--right-rail-width) auto 0;
-  height: 11px;
+  height: var(--pane-cap-height);
   border-image: url("./moonwell/pane-cap.webp") 0 0 0 11 fill / 0 0 0 11px round;
   pointer-events: none;
 }
