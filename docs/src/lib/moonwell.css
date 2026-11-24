@@ -78,29 +78,35 @@ body:has(.moonwell) {
 }
 .moonwell .directory,
 .moonwell .reader {
-  border: solid transparent;
-  border-width: 5px 22px 3px 11px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
+  padding-left: 11px;
   border-image: url("./moonwell/quest-index.webp") 5 22 3 11 / 5px 22px 3px 11px stretch round;
-  background: #24211e url("./moonwell/stone-tile.webp") repeat padding-box;
+  background: #24211e url("./moonwell/stone-tile.webp") repeat;
 }
 .moonwell .directory {
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  min-width: 0;
-  padding: 1rem 0.65rem;
   color: #ffdc91;
 }
+.moonwell .directory-tools {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0.65rem 0.4rem;
+  background: #24211e url("./moonwell/stone-tile.webp") repeat;
+  background-clip: padding-box;
+  margin-top: 5px;
+}
 .moonwell .directory .search {
-  flex: none;
+  min-width: 0;
   width: 100%;
 }
 .moonwell #guide-menu {
-  min-height: 0;
-  overflow: auto;
-  margin-right: -24px;
-  padding-right: 3px;
+  padding: 0 0.65rem 1rem;
 }
 .moonwell .project-links a[aria-current] {
   color: #ffdc91;
@@ -118,7 +124,12 @@ body:has(.moonwell) {
   overflow-wrap: anywhere;
 }
 .moonwell .directory nav a:hover {
-  text-decoration: underline;
+  color: #fff2cb;
+  background-color: #ffdc9112;
+}
+.moonwell .directory nav a:focus-visible {
+  outline: 1px solid #ffdc91;
+  outline-offset: -2px;
 }
 .moonwell .directory nav .deep {
   padding-left: 1.6rem;
@@ -126,49 +137,47 @@ body:has(.moonwell) {
 }
 .moonwell .directory nav a[aria-current] {
   color: white;
-  background: url("./moonwell/quest-highlight.webp") center / 100% 100%;
+  box-shadow: inset 2px 0 #d4aa5c;
+  background-color: #ffdc911b;
 }
 .moonwell .menu-toggle {
   display: none;
 }
 .moonwell .reader {
-  min-width: 0;
   color: #eee8da;
-  min-height: 0;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr);
 }
-.moonwell .prose {
+.moonwell :is(.prose, .directory-scroll) {
   overflow: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
-  margin-right: -21px;
+}
+.moonwell .prose {
   padding: 1rem clamp(1rem, 2.5vw, 2.7rem);
 }
-.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar {
-  width: 20px;
+.moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar {
+  width: 22px;
 }
-.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-track {
+.moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar-track {
   background: #17130f url("./moonwell/scroll-track.webp") center / 100% auto repeat-y;
 }
-.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-thumb {
+.moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar-thumb {
   min-height: 20px;
   border: 5px solid transparent;
   border-image: url("./moonwell/scroll-Knob.png") 5 fill / 5px stretch;
 }
-.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical {
+.moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar-button:vertical {
   display: none;
 }
-.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical:start:decrement,
-.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical:end:increment {
+.moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar-button:vertical:start:decrement,
+.moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar-button:vertical:end:increment {
   display: block;
-  height: 20px;
-  background: #17130f center / contain no-repeat;
+  height: 21px;
+  background: transparent center / 100% 100% no-repeat;
 }
-.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical:start:decrement {
+.moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar-button:vertical:start:decrement {
   background-image: url("./moonwell/scroll-ScrollUpButton-Up.png");
 }
-.moonwell :is(.prose, #guide-menu)::-webkit-scrollbar-button:vertical:end:increment {
+.moonwell :is(.prose, .directory-scroll)::-webkit-scrollbar-button:vertical:end:increment {
   background-image: url("./moonwell/scroll-ScrollDownButton-Up.png");
 }
 .moonwell .prose h1,
@@ -235,12 +244,9 @@ body:has(.moonwell) {
     font-size: 0.84rem;
   }
   .moonwell .directory {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: auto minmax(0, 1fr);
     max-height: 48%;
-    align-items: center;
-    gap: 0.5rem;
+  }
+  .moonwell .directory-tools {
     padding: 0.4rem 0.5rem;
   }
   .moonwell .directory .search {
@@ -255,8 +261,6 @@ body:has(.moonwell) {
   }
   .moonwell #guide-menu {
     display: none;
-    grid-column: 1 / -1;
-    align-self: stretch;
   }
   .moonwell #guide-menu.open {
     display: block;

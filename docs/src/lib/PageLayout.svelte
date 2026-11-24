@@ -53,27 +53,31 @@ let menuOpen = $state(false);
   </header>
   <div class="panes">
     <aside class="directory">
-      <Search />
-      <button class="menu-toggle" aria-expanded={menuOpen} aria-controls="guide-menu" onclick={() => (menuOpen = !menuOpen)}>Contents</button>
-      <nav id="guide-menu" class:open={menuOpen} aria-label="Documentation contents">
-        {#each sections as section}
-          <h2>{section.title}</h2>
-          {#each section.pages as link}
-            <a href={link.href} aria-current={page.url.pathname === link.href ? "page" : undefined}>{link.title}</a>
+      <div class="directory-scroll">
+        <div class="directory-tools">
+          <Search />
+          <button class="menu-toggle" aria-expanded={menuOpen} aria-controls="guide-menu" onclick={() => (menuOpen = !menuOpen)}>Contents</button>
+        </div>
+        <nav id="guide-menu" class:open={menuOpen} aria-label="Documentation contents">
+          {#each sections as section}
+            <h2>{section.title}</h2>
+            {#each section.pages as link}
+              <a href={link.href} aria-current={page.url.pathname === link.href ? "page" : undefined}>{link.title}</a>
+            {/each}
           {/each}
-        {/each}
-        {#if fm.anchors?.length}
-          <h2>In this guide</h2>
-          {#each fm.anchors as anchor}
-            <a class:deep={anchor.depth === 3} href={'#' + anchor.id} onclick={() => (menuOpen = false)}>{anchor.title}</a>
-          {/each}
-        {/if}
-        <h2>Documentation</h2>
-        {#each projects as project}<a href={docs + project.href}>{project.title}</a>{/each}
-        <a href={docs + "/projects/"}>All projects</a>
-        <a href="https://notes.wc3.dev/">Patch notes</a>
-        <a href="https://wc3.dev/">Back to wc3.dev</a>
-      </nav>
+          {#if fm.anchors?.length}
+            <h2>In this guide</h2>
+            {#each fm.anchors as anchor}
+              <a class:deep={anchor.depth === 3} href={'#' + anchor.id} onclick={() => (menuOpen = false)}>{anchor.title}</a>
+            {/each}
+          {/if}
+          <h2>Documentation</h2>
+          {#each projects as project}<a href={docs + project.href}>{project.title}</a>{/each}
+          <a href={docs + "/projects/"}>All projects</a>
+          <a href="https://notes.wc3.dev/">Patch notes</a>
+          <a href="https://wc3.dev/">Back to wc3.dev</a>
+        </nav>
+      </div>
     </aside>
     <main class="reader">
       <!-- svelte-ignore a11y_no_noninteractive_tabindex (The scrollable article needs keyboard focus for paging.) -->
