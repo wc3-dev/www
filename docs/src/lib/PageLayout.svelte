@@ -70,7 +70,7 @@ let menuOpen = $state(false);
         {/if}
         <h2>Documentation</h2>
         {#each projects as project}<a href={docs + project.href}>{project.title}</a>{/each}
-        <a href={docs + "/"}>All projects</a>
+        <a href={docs + "/projects/"}>All projects</a>
         <a href="https://notes.wc3.dev/">Patch notes</a>
         <a href="https://wc3.dev/">Back to wc3.dev</a>
       </nav>

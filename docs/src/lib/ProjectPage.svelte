@@ -8,4 +8,4 @@ let { fm, children }: Pick<ComponentProps<typeof PageLayout>, "fm" | "children">
 const project = $derived(projects.find(({ href }) => page.url.pathname.startsWith(href)));
 </script>
 
-<PageLayout {fm} {children} title={project ? project.title + " Documentation" : "Warcraft III Modding Docs"} home={project?.href ?? "/"} sections={project?.href === "/moonwell/" ? moonwellSections : []} />
+<PageLayout {fm} {children} title={project ? project.title + " Documentation" : "Warcraft III Modding Docs"} home={project?.href ?? "/projects/"} sections={project?.href === "/moonwell/" ? moonwellSections : []} />
