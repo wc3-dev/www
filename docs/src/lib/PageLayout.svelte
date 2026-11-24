@@ -87,6 +87,5 @@ let menuOpen = $state(false);
       </article>
     </main>
   </div>
-  <div class="sill" aria-hidden="true"></div>
-  <footer>Not affiliated with Blizzard Entertainment</footer>
+  <footer class="sill">Not affiliated with Blizzard Entertainment</footer>
 </div>
