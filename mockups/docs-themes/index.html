@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" data-theme="quest">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Moonwell · Getting Started</title>
+  <script>
+    const choices = { quest: "Quest Log", book: "Spellbook", ledger: "Achievements" };
+    const requested = new URLSearchParams(location.search).get("theme");
+    const theme = Object.hasOwn(choices, requested) ? requested : "quest";
+    document.documentElement.dataset.theme = theme;
+  </script>
+  <link rel="stylesheet" href="themes.css">
+  <link rel="stylesheet" href="wrappers.css">
+</head>
+<body>
+  <a class="skip" href="#guide">Skip to guide</a>
+  <header class="mast">
+    <a class="brand" href="https://docs.wc3.dev/">Moonwell <small>Documentation</small></a>
+  </header>
+
+  <main class="window" id="guide">
+    <header class="titlebar">
+      <a class="quest-home" href="https://docs.wc3.dev/"><img src="art/moonwell.png" width="60" height="60" alt="Moonwell documentation home"></a>
+      <span class="window-title">Moonwell Documentation</span>
+      <nav class="switcher" aria-label="Documentation themes">
+        <a class="button" href="?theme=quest" data-choice="quest">Quest Log</a>
+        <a class="button" href="?theme=book" data-choice="book">Spellbook</a>
+        <a class="button" href="?theme=ledger" data-choice="ledger">Achievements</a>
+      </nav>
+    </header>
+    <div class="panes">
+      <div class="directory">
+        <nav class="catalog" aria-label="Moonwell guides">
+          <h2>Guides</h2>
+          <a class="active" href="#guide" aria-current="page">Getting Started</a>
+          <a href="https://docs.wc3.dev/guides/project-and-editor/">Project &amp; World Editor</a>
+          <a href="https://docs.wc3.dev/guides/objects/">Objects</a>
+          <a href="https://docs.wc3.dev/guides/components-and-reactions/">Actors &amp; Components</a>
+          <a href="https://docs.wc3.dev/guides/abilities-buffs-and-timers/">Abilities, Buffs &amp; Timers</a>
+          <a href="https://docs.wc3.dev/guides/multiplayer/">Multiplayer</a>
+        </nav>
+        <nav class="chapters" aria-label="Guide sections">
+          <h2>In this guide</h2>
+          <a href="#prerequisites">Prerequisites</a><a href="#installation">Installation</a><a href="#create-and-run">Create and run</a>
+        </nav>
+      </div>
+      <div class="reader">
+        <header class="summary">
+          <p class="kicker">Moonwell guides</p>
+          <h1>Getting Started</h1>
+          <p>Install Moonwell, create a map from the template, and run it in Warcraft III.</p>
+        </header>
+        <section id="prerequisites">
+          <div class="step-name"><span class="slot scroll" aria-hidden="true"></span><h2>Prerequisites</h2></div>
+          <ul>
+            <li><a href="https://dotnet.microsoft.com/download/dotnet/10.0">.NET 10 SDK</a></li>
+            <li><a href="https://warcraft3.blizzard.com/">Warcraft III: Reforged 3.0.1</a></li>
+            <li><code>common.j</code> and <code>Blizzard.j</code> in <code>Documents\Warcraft III\JassHelper</code></li>
+          </ul>
+        </section>
+        <section id="installation">
+          <div class="step-name"><span class="slot gear" aria-hidden="true"></span><h2>Installation</h2></div>
+          <p>Install the project template and the command-line tool.</p>
+          <pre tabindex="0" aria-label="Installation commands"><code>dotnet new install Moonwell.Templates
+dotnet tool install --global Moonwell.Cli</code></pre>
+        </section>
+        <section id="create-and-run">
+          <div class="step-name"><span class="slot map" aria-hidden="true"></span><h2>Create and run</h2></div>
+          <p>Create a project, open its directory, and launch the map.</p>
+          <pre tabindex="0" aria-label="Create and run commands"><code>dotnet new moonwell -n MyMap
+cd MyMap
+moonwell run</code></pre>
+        </section>
+        <a class="next button" href="https://docs.wc3.dev/guides/getting-started/#whats-in-the-template">Inside the template</a>
+      </div>
+    </div>
+    <div class="sill" aria-hidden="true"></div>
+    <nav class="bookmarks" aria-label="Spellbook chapters">
+      <a class="scroll" href="#prerequisites" aria-label="Prerequisites" title="Prerequisites"></a>
+      <a class="gear" href="#installation" aria-label="Installation" title="Installation"></a>
+      <a class="map" href="#create-and-run" aria-label="Create and run" title="Create and run"></a>
+    </nav>
+    <nav class="booktabs" aria-label="Documentation sections">
+      <a href="https://docs.wc3.dev/#guides">Guides</a>
+      <a href="https://docs.wc3.dev/#reference">Reference</a>
+    </nav>
+  </main>
+  <footer>
+    <a href="?wrap=docs-bar">Compare five website wrappers</a> ·
+    <a href="quest-sites.html">Compare three Quest Log website layouts</a>
+    <details>
+      <summary>Texture sources</summary>
+      <p>World of Warcraft interface textures by Blizzard Entertainment, from Gethe’s mirror.</p>
+      <a href="https://github.com/Gethe/wow-ui-textures/tree/d23deaf8f44a7d280dc974a5c9d5321c013db59b/QUESTFRAME">Quest Log frame and portrait</a> ·
+      <a href="https://github.com/Gethe/wow-ui-textures/tree/d23deaf8f44a7d280dc974a5c9d5321c013db59b/SPELLBOOK">Spellbook pages and tabs</a> ·
+      <a href="https://github.com/Gethe/wow-ui-textures/tree/d23deaf8f44a7d280dc974a5c9d5321c013db59b/ACHIEVEMENTFRAME">Achievement panels and controls</a>
+    </details>
+  </footer>
+  <script>
+    document.querySelector('[data-choice="' + theme + '"]').setAttribute("aria-current", "page");
+    if (theme !== "quest") {
+      document.querySelector(".mast").append(document.querySelector(".switcher"));
+      document.querySelector(".window-title").textContent = choices[theme];
+    }
+    if (theme === "book") {
+      const leftPage = document.querySelector(".directory");
+      leftPage.prepend(document.querySelector(".summary"), document.querySelector("#prerequisites"));
+    }
+  </script>
+  <script src="wrappers.js"></script>
+</body>
+</html>

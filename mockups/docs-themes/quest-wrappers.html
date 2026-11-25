@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Quest Log website wrappers</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 90rem; padding: clamp(1rem,4vw,4rem); background: #f4f1e9; color: #2c2925; font: 1rem/1.5 "Segoe UI",Arial,sans-serif; }
+    header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.4rem; }
+    h1, h2, p { margin: 0; }
+    h1 { font: 400 clamp(2rem,4vw,3.8rem)/1.12 Georgia,serif; letter-spacing: -.045em; }
+    main { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,22rem),1fr)); gap: 1.8rem 1.3rem; }
+    a { color: inherit; text-underline-offset: .22rem; }
+    main a { text-decoration: none; }
+    main a:hover h2 { text-decoration: underline; }
+    img { width: 100%; display: block; aspect-ratio: 1.7; object-fit: cover; object-position: top; border: 1px solid #b7afa0; }
+    h2 { font: 400 1.6rem Georgia,serif; margin: .6rem 0 .18rem; }
+    p { color: #574f44; }
+    :focus-visible { outline: 3px solid #176664; outline-offset: 4px; }
+  </style>
+</head>
+<body>
+  <header><h1>Quest Log website wrappers</h1><a href="index.html?theme=quest">View the original Quest Log</a></header>
+  <main>
+    <a href="index.html?wrap=docs-bar"><img src="wrap-docs-bar.webp" alt=""><h2>Docs Bar</h2><p>A slim site header and breadcrumb above the centered window.</p></a>
+    <a href="index.html?wrap=portal"><img src="wrap-portal.webp" alt=""><h2>Developer Portal</h2><p>A persistent site rail for the guide library and API references.</p></a>
+    <a href="index.html?wrap=atlas"><img src="wrap-atlas.webp" alt=""><h2>Atlas</h2><p>An Eastern Kingdoms map masthead introduces the guide collection.</p></a>
+    <a href="index.html?wrap=reference"><img src="wrap-reference.webp" alt=""><h2>Reference Desk</h2><p>A dark workspace with related references and downloads beside the guide.</p></a>
+    <a href="index.html?wrap=handbook"><img src="wrap-handbook.webp" alt=""><h2>Handbook</h2><p>A book-style masthead and section menu on a cream page.</p></a>
+  </main>
+</body>
+</html>

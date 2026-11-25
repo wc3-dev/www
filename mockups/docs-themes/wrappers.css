@@ -1,0 +1,118 @@
+/* Website chrome only. The window uses the original Quest Log markup and themes.css. */
+html[data-wrap] { background: var(--ws-paper); }
+html[data-wrap] body { padding: 0; }
+[data-wrap] body > .mast, [data-wrap] body > footer { display: none; }
+[data-wrap] {
+  --ws-paper: #f2f4f4; --ws-surface: #fff; --ws-ink: #192e33; --ws-muted: #526367;
+  --ws-line: #cbd4d4; --ws-accent: #226157; --ws-width: 74rem;
+}
+.ws-compare, .ws-mast, .ws-crumb, .ws-foot, .ws-rail, .ws-resources, .ws-deskhead, .ws-pagehead, .ws-handbook, .ws-atlas-intro {
+  font-family: "Segoe UI", Arial, sans-serif; color: var(--ws-ink);
+}
+.ws-compare { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: .18rem; padding: .36rem .5rem; background: #232323; }
+.ws-compare a, .ws-nav a, .ws-crumb a, .ws-foot a, .ws-rail a, .ws-menu summary, .ws-handbook a, .ws-resources a, .ws-atlas-links a { color: inherit; text-decoration: none; font-family: inherit; }
+.ws-compare a { color: #d7d5ce; padding: .2rem .7rem; font-size: .875rem; }
+.ws-compare a:first-child { border-right: 1px solid #615f5a; }
+.ws-compare a[aria-current] { color: #211f1c; background: #e8e4d9; border-radius: 3px; }
+.ws-compare a:hover, .ws-nav a:hover, .ws-foot a:hover, .ws-crumb a:hover, .ws-rail a:hover, .ws-handbook a:hover, .ws-resources a:hover, .ws-atlas-links a:hover { text-decoration: underline; }
+.ws-mast { background: var(--ws-surface); border-bottom: 1px solid var(--ws-line); }
+.ws-bar, .ws-body, .ws-foot { width: min(calc(100% - 3rem), var(--ws-width)); margin: 0 auto; }
+.ws-bar, .ws-foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.ws-bar { min-height: 4.5rem; }
+.ws-brand { display: inline-block; color: inherit; font: 2.3rem/1.1 Goodmountain, Georgia, serif; text-decoration: none; }
+.ws-nav { display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2.25rem); font-size: .98rem; }
+.ws-menu { position: relative; }
+.ws-menu summary { cursor: pointer; }
+.ws-menu nav { position: absolute; z-index: 5; right: 0; top: calc(100% + .6rem); width: max-content; padding: .45rem; background: var(--ws-surface); color: var(--ws-ink); border: 1px solid var(--ws-line); box-shadow: 0 .45rem 1.25rem #0002; }
+.ws-menu a { display: block; padding: .45rem .7rem; }
+.ws-crumb { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; color: var(--ws-muted); font-size: .9rem; }
+.ws-crumb i { font-style: normal; opacity: .6; }
+.ws-crumb span { color: var(--ws-ink); font-weight: 600; }
+.ws-body { padding-block: 1.2rem 2.2rem; }
+.ws-body > .ws-crumb { margin: 0 0 1.15rem .5rem; }
+.ws-log { min-width: 0; }
+.ws-foot { border-top: 1px solid var(--ws-line); padding: 1rem 0 1.4rem; font-size: .86rem; color: var(--ws-muted); }
+[data-wrap="docs-bar"] .ws-bar { border-top: 3px solid var(--ws-accent); }
+[data-wrap="docs-bar"] .ws-brand::after { content: "Docs"; font: 600 .95rem "Segoe UI", sans-serif; margin-left: .8rem; padding-left: .8rem; border-left: 1px solid var(--ws-line); vertical-align: middle; }
+[data-wrap="docs-bar"] .ws-body { max-width: 72rem; }
+
+/* Full-height site navigation, with the guide library as the working area. */
+[data-wrap="portal"] { --ws-ink: #20323b; --ws-muted: #526570; --ws-line: #cbd7db; --ws-paper: #e8eff0; }
+[data-wrap="portal"] .ws-site { display: grid; grid-template-columns: 14.75rem minmax(0, 1fr); grid-template-rows: minmax(calc(100dvh - 6.5rem),auto) auto; }
+.ws-rail { grid-row: 1 / -1; background: #163b3e; color: #edeee6; padding: 2rem 1.25rem; display: flex; flex-direction: column; }
+.ws-rail > div:first-child { padding: 0 .55rem 1.4rem; border-bottom: 1px solid #597676; }
+.ws-rail p { color: #c6d9d3; font-size: .92rem; margin-top: .2rem; }
+.ws-rail nav { display: grid; gap: .2rem; }
+.ws-rail strong { color: #bccfc9; font-size: .78rem; text-transform: uppercase; letter-spacing: .095em; padding: 1.65rem .6rem .3rem; }
+.ws-rail nav a { padding: .55rem .6rem; font-size: .97rem; }
+.ws-rail nav a[aria-current] { background: #315453; border-left: 3px solid #cbbf8c; }
+.ws-rail .ws-brand { font-family: Goodmountain, Georgia, serif; }
+.ws-rail-foot { margin-top: auto; padding: 2rem .6rem 0; }
+[data-wrap="portal"] .ws-body { padding-top: 1.5rem; }
+.ws-pagehead { margin: 0 .5rem 1.35rem; }
+.ws-pagehead p { font-size: clamp(2rem, 3.3vw, 3.2rem); font-weight: 620; letter-spacing: -.045em; line-height: 1.18; margin-top: .45rem; }
+
+/* The atlas is site artwork above the complete guide window. */
+[data-wrap="atlas"] { --ws-paper: #ede9dd; --ws-surface: #192e28; --ws-line: #bdb9a6; --ws-ink: #292d24; --ws-muted: #53574a; }
+[data-wrap="atlas"] .ws-mast, [data-wrap="atlas"] .ws-menu nav { color: #f4efdb; }
+[data-wrap="atlas"] .ws-bar { min-height: 3.7rem; }
+.ws-atlas-intro {
+  background: linear-gradient(90deg,#172a24 5%,#263a2eea 32%,#263a2e45 62%,transparent 84%),url("art/azeroth.webp") right 45% / cover;
+  color: #fffae5; border-bottom: 3px solid #9c8658;
+}
+.ws-atlas-intro > div { width: min(calc(100% - 3rem),var(--ws-width)); margin: auto; padding: 1.6rem .5rem 1.8rem; }
+.ws-atlas-intro .ws-display { font: normal clamp(2.75rem,4.5vw,4.5rem)/1 Friz,Georgia,serif; margin-bottom: .5rem; }
+.ws-atlas-intro p { max-width: 36ch; }
+.ws-atlas-links { display: flex; flex-wrap: wrap; gap: .75rem 1.4rem; margin-top: .8rem; }
+.ws-atlas-links a { color: #f9d99e; font-size: .92rem; text-decoration: underline; text-underline-offset: .2rem; }
+
+/* A utility rail puts supporting reference material alongside the log. */
+[data-wrap="reference"] { --ws-width: 88rem; --ws-paper: #1e2227; --ws-surface: #14181c; --ws-ink: #eeefea; --ws-muted: #b6bfc6; --ws-line: #46515a; }
+[data-wrap="reference"] .ws-mast { border-bottom: 2px solid #997147; }
+[data-wrap="reference"] .ws-bar { min-height: 3.85rem; }
+.ws-deskhead { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin: 0 .5rem 1.2rem; }
+.ws-deskhead p { font-size: 1.8rem; font-weight: 600; letter-spacing: -.035em; }
+[data-wrap="reference"] .ws-columns { display: grid; grid-template-columns: minmax(0,1fr) 14rem; align-items: start; gap: 1.5rem; }
+.ws-resources { position: sticky; top: 1rem; padding: 1.1rem 1rem; background: #2a3036; border-top: 3px solid #c19765; }
+.ws-resources h2 { font: 600 1.15rem "Segoe UI",Arial,sans-serif; }
+.ws-resources h2:not(:first-child) { margin-top: 1.25rem; }
+.ws-resources a { display: block; color: #f0d0a0; border-bottom: 1px solid var(--ws-line); padding: .75rem 0; }
+.ws-resources small { display: block; color: var(--ws-muted); margin-top: .15rem; font-size: .87rem; }
+
+/* A print-style masthead and section navigation frame the guide as a handbook entry. */
+[data-wrap="handbook"] { --ws-width: 72.5rem; --ws-paper: #faf5e8; --ws-ink: #511d23; --ws-muted: #705e52; --ws-line: #baaa93; }
+.ws-handbook { width: min(calc(100% - 3rem),var(--ws-width)); text-align: center; margin: auto; }
+.ws-imprint { display: flex; justify-content: space-between; padding: .75rem 0 .4rem; border-bottom: 1px solid var(--ws-line); color: var(--ws-muted); font: .86rem Georgia,serif; }
+.ws-handbook .ws-nameplate { display: block; padding: .55rem 0 .65rem; font: 400 clamp(2.3rem,5.9vw,5.4rem)/1.15 Georgia,serif; letter-spacing: -.065em; }
+.ws-handbook nav { display: flex; justify-content: center; gap: 1.4rem; padding: .52rem .25rem; border-block: 3px double #885f58; }
+.ws-handbook nav a { font: 600 .91rem "Segoe UI",Arial,sans-serif; }
+[data-wrap="handbook"] .ws-body { padding-top: .9rem; }
+
+@media (max-width: 59rem) {
+  [data-wrap="portal"] .ws-site { grid-template-columns: 11.8rem minmax(0,1fr); }
+  .ws-rail { padding-inline: .7rem; }
+  [data-wrap="reference"] .ws-columns { display: block; }
+  .ws-resources { position: static; margin-top: 1.2rem; }
+}
+@media (max-width: 48rem) {
+  .ws-bar, .ws-body, .ws-foot, .ws-atlas-intro > div, .ws-handbook { width: calc(100% - 1.25rem); }
+  .ws-bar { min-height: 3.6rem; }
+  .ws-brand { font-size: 1.8rem; }
+  .ws-nav { gap: .75rem; font-size: .9rem; }
+  [data-wrap="portal"] .ws-site { display: block; }
+  .ws-rail { padding: .8rem 1rem; gap: .6rem; }
+  .ws-rail > div:first-child { display: flex; align-items: baseline; gap: .75rem; border: 0; padding: 0; }
+  .ws-rail nav { display: flex; flex-wrap: wrap; gap: .15rem .45rem; }
+  .ws-rail nav a { font-size: .85rem; padding: .27rem .45rem; }
+  .ws-rail strong, .ws-rail-foot { display: none; }
+  .ws-deskhead { flex-wrap: wrap; gap: .15rem; }
+  .ws-compare a { padding: .2rem .45rem; }
+  .ws-atlas-intro { background-position: center; }
+  .ws-atlas-intro > div { padding: 1.5rem .65rem; }
+}
+@media (max-width: 27rem) {
+  .ws-nav { gap: .65rem; }
+  [data-wrap="docs-bar"] .ws-brand::after { display: none; }
+  .ws-atlas-intro p { max-width: 28ch; text-shadow: 0 1px 3px #172a24; }
+  .ws-handbook nav { gap: .75rem; }
+}

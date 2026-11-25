@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" data-layout="guidebook">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Getting Started · Moonwell Docs</title>
+  <script>
+    const layout = new URLSearchParams(location.search).get("layout");
+    if (["guidebook", "field-notes", "workbench"].includes(layout)) document.documentElement.dataset.layout = layout;
+  </script>
+  <link rel="stylesheet" href="quest-sites.css">
+</head>
+<body>
+  <a class="skip" href="#guide">Skip to guide</a>
+  <nav class="compare" aria-label="Compare layouts">
+    <div>
+      <a href="index.html?theme=quest">Original Quest Log</a>
+      <a data-option="guidebook" href="?layout=guidebook">Guidebook</a>
+      <a data-option="field-notes" href="?layout=field-notes">Field Notes</a>
+      <a data-option="workbench" href="?layout=workbench">Workbench</a>
+    </div>
+  </nav>
+  <header class="mast">
+    <div class="bar">
+      <a class="brand" href="https://docs.wc3.dev/"><img src="art/quest-portrait.webp" width="38" height="38" alt=""><span>Moonwell</span><small>Docs</small></a>
+      <nav class="global" aria-label="Site navigation">
+        <a href="https://docs.wc3.dev/#guides">Guides</a>
+        <a href="https://docs.wc3.dev/#reference">Reference</a>
+        <a href="https://wc3.dev/">wc3.dev</a>
+      </nav>
+    </div>
+  </header>
+  <div class="shell">
+    <aside class="library">
+      <nav aria-label="Documentation library">
+        <h2>Guides</h2>
+        <a aria-current="page" href="#guide">Getting Started</a>
+        <a href="https://docs.wc3.dev/guides/project-and-editor/">Project &amp; World Editor</a>
+        <a href="https://docs.wc3.dev/guides/objects/">Objects</a>
+        <a href="https://docs.wc3.dev/guides/components-and-reactions/">Actors &amp; Components</a>
+        <a href="https://docs.wc3.dev/guides/abilities-buffs-and-timers/">Abilities, Buffs &amp; Timers</a>
+        <a href="https://docs.wc3.dev/guides/multiplayer/">Multiplayer</a>
+        <h2>Reference</h2>
+        <a href="https://docs.wc3.dev/reference/cli-and-build/">CLI &amp; Build</a>
+        <a href="https://docs.wc3.dev/reference/runtime-api/">Runtime API</a>
+        <a href="https://docs.wc3.dev/reference/objects-and-natives/">Objects &amp; Natives API</a>
+        <a href="https://docs.wc3.dev/reference/diagnostics/">Diagnostics &amp; Errors</a>
+      </nav>
+    </aside>
+    <main id="guide">
+      <header class="lead">
+        <p class="crumb"><a href="https://docs.wc3.dev/">Documentation</a><span aria-hidden="true"> / </span><a href="https://docs.wc3.dev/#guides">Guides</a></p>
+        <h1>Getting Started</h1>
+        <p class="deck">Install Moonwell, create a map from the template, and run it in Warcraft III.</p>
+      </header>
+      <nav class="contents" aria-label="On this page">
+        <h2>On this page</h2>
+        <a href="#prerequisites">Prerequisites</a>
+        <a href="#installation">Installation</a>
+        <a href="#create-and-run">Create and run</a>
+      </nav>
+      <section class="needs" id="prerequisites">
+        <h2>Prerequisites</h2>
+        <ul>
+          <li><a href="https://dotnet.microsoft.com/download/dotnet/10.0">.NET 10 SDK</a></li>
+          <li><a href="https://warcraft3.blizzard.com/">Warcraft III: Reforged 3.0.1</a></li>
+          <li><code>common.j</code> and <code>Blizzard.j</code> in <code>Documents\Warcraft III\JassHelper</code></li>
+        </ul>
+      </section>
+      <div class="commands">
+        <section id="installation">
+          <h2>Installation</h2>
+          <p>Install the project template and the Moonwell command-line tool.</p>
+          <pre tabindex="0" aria-label="Installation commands"><code><b>dotnet</b> new install Moonwell.Templates
+<b>dotnet</b> tool install --global Moonwell.Cli</code></pre>
+        </section>
+        <section id="create-and-run">
+          <h2>Create and run</h2>
+          <p>Create a project named <code>MyMap</code>, open its directory, and launch the map.</p>
+          <pre tabindex="0" aria-label="Create and run commands"><code><b>dotnet</b> new moonwell -n MyMap
+<b>cd</b> MyMap
+<b>moonwell</b> run</code></pre>
+        </section>
+        <a class="next" href="https://docs.wc3.dev/guides/getting-started/#whats-in-the-template">Inside the template</a>
+      </div>
+    </main>
+  </div>
+  <footer><a href="https://docs.wc3.dev/">Moonwell Docs</a><a href="https://github.com/Gethe/wow-ui-textures/tree/d23deaf8f44a7d280dc974a5c9d5321c013db59b/QUESTFRAME">Quest Log textures</a></footer>
+  <script>
+    document.querySelector('[data-option="' + document.documentElement.dataset.layout + '"]').setAttribute("aria-current", "page");
+  </script>
+</body>
+</html>
